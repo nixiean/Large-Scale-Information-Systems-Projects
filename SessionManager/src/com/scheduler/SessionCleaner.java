@@ -18,7 +18,7 @@ public class SessionCleaner implements Runnable{
 	private static final double sessionTimeOutInMins = 3.0;
 	
 	public SessionCleaner(Hashtable<String, String> sessionTable) {
-		//initializes the session table
+		//Initializes the session table
 		this.sessionTable = sessionTable;
 		
 	}
