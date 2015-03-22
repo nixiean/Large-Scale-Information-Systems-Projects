@@ -72,6 +72,12 @@
 
 
 	<table style="width: 40%">
+	<tr>
+	<td><b>ServerID</b></td>
+	<td><b>Status</b></td>
+	<td><b>Last Updated on</b></td>
+	
+	</tr>
 		<%
 			for (String key : EnterServlet.myView.keySet()) {
 		%>
