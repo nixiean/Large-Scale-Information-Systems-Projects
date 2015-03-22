@@ -1,3 +1,4 @@
+<%@page import="com.view.ServerStatus.ServerStatusCode"%>
 <%@page import="com.servlet.EnterServlet"%>
 <%@page import="com.util.SessionUtil"%>
 <%@page import="java.util.Hashtable"%>
@@ -70,18 +71,21 @@
 		Click <a href="./print">here</a> to print all active sessions
 	</h5>
 
-
-	<table style="width: 40%">
-	<tr>
+	<table style="width: 40% ; border: 2px solid black">
+	<tr bgcolor = <% out.print("#C9C9C9"); %>>
 	<td><b>ServerID</b></td>
 	<td><b>Status</b></td>
 	<td><b>Last Updated on</b></td>
-	
 	</tr>
 		<%
 			for (String key : EnterServlet.myView.keySet()) {
+				String statusColor;
+				if (EnterServlet.myView.get(key).getStatus() == ServerStatusCode.UP) 
+					statusColor = "#A5DE43";
+				else 
+				    statusColor = "#ED4A4A";
 		%>
-		<tr>
+		<tr bgcolor = <% out.print(statusColor); %>>
 			<td>
 				<%
 					out.print(key);
