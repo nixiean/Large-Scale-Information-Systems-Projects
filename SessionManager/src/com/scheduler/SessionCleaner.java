@@ -40,6 +40,7 @@ public class SessionCleaner implements Runnable{
 			}
 		}
 		
+		//Remove the timeout sessions
 		for(String sessionId : sessionIdsToRemove) {
 			sessionTable.remove(sessionId);
 		}
