@@ -70,16 +70,33 @@
 		Click <a href="./print">here</a> to print all active sessions
 	</h5>
 
-	<%
-		for (String key : EnterServlet.myView.keySet()) {
-			out.println(key + ","
-					+ EnterServlet.myView.get(key).getStatus() + ","
-					+ EnterServlet.myView.get(key).getTime());
-	%>
-	</br>
-	<%
-		}
-	%>
+
+	<table style="width: 40%">
+		<%
+			for (String key : EnterServlet.myView.keySet()) {
+		%>
+		<tr>
+			<td>
+				<%
+					out.print(key);
+				%>
+			</td>
+			<td>
+				<%
+					out.print(EnterServlet.myView.get(key).getStatus());
+				%>
+			</td>
+			<td>
+				<%
+					out.print(EnterServlet.myView.get(key).getTime());
+				%>
+			</td>
+		</tr>
+		<%
+			}
+		%>
+
+	</table>
 
 </body>
 </html>
