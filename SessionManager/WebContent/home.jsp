@@ -72,7 +72,7 @@
 
 	<%
 		for (String key : EnterServlet.myView.keySet()) {
-			out.println("myViewEntry :" + key + ","
+			out.println(key + ","
 					+ EnterServlet.myView.get(key).getStatus() + ","
 					+ EnterServlet.myView.get(key).getTime());
 	%>
