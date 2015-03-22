@@ -19,6 +19,7 @@ public class ViewExchangerThread implements Runnable{
 	}
 	
 	private static String pickGossipPartner() {
+		//TODO Pick a partner from only the UP servers
 		ArrayList<String> serverIdList = new ArrayList<String>(EnterServlet.myView.keySet());
 		Random rand = new Random();
 		return serverIdList.get(rand.nextInt(serverIdList.size()));
