@@ -11,6 +11,7 @@ public class SMRPCClient {
 	private static final int portPROJ1BRPC = 5300;
 	private static final int packetSize = 512;
 	
+	//comment
 	public static void main(String[] args) {
 		try {
 			// get a datagram socket
