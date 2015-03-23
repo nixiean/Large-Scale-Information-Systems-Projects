@@ -33,6 +33,7 @@ import com.view.ServerStatus.ServerStatusCode;
 public class EnterServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	public static HashMap<String, ServerStatus> myView = new HashMap<String, ServerStatus>();
+	public static Hashtable<String, String> sessionTable = new Hashtable<String, String>();
 	
 	
 	@Override
@@ -40,7 +41,7 @@ public class EnterServlet extends HttpServlet {
 		super.init();
 		ServletContext context = getServletContext();
 		//initialize the hashtable once the container starts
-		Hashtable<String, String> sessionTable = new Hashtable<String, String>();
+		//Hashtable<String, String> sessionTable = new Hashtable<String, String>();
 		context.setAttribute("sessionTable", sessionTable);
 		
 		//Initialize the session cleaner
@@ -66,7 +67,7 @@ public class EnterServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		Hashtable<String, String> sessionHashTable = 
+		Hashtable<String, String> sessionTable = 
 				(Hashtable<String, String>) request.getServletContext().getAttribute("sessionTable");
 		String param = request.getParameter("submit");
 		boolean isRefresh = null != param ? param.equals("Refresh") : false;
@@ -90,7 +91,7 @@ public class EnterServlet extends HttpServlet {
 			}
 			String sessionId = SessionUtil.getSessionId(myCookie.getValue());
 			request.setAttribute("currentSessionId", sessionId);
-			String welcomeMessage = (null == sessionHashTable.get(sessionId)) ? "Hello User" : (sessionHashTable.get(sessionId).split("_"))[0];
+			String welcomeMessage = (null == sessionTable.get(sessionId)) ? "Hello User" : (sessionTable.get(sessionId).split("_"))[0];
 			myCookie.setMaxAge(3*60);
 			String cookieExpireTs = getExpiryTimeStamp(3);
 			request.setAttribute("timeStamp", cookieExpireTs);
@@ -98,7 +99,7 @@ public class EnterServlet extends HttpServlet {
 			
 			//TODO implemenet location Metadata
 			String serializedSessionMsg = serializeSessionObject(welcomeMessage, SessionUtil.getVersionNumber(myCookie.getValue()), cookieExpireTs, "");
-			sessionHashTable.put(sessionId, serializedSessionMsg);
+			sessionTable.put(sessionId, serializedSessionMsg);
 			response.addCookie(myCookie);
 			request.setAttribute("cookieMsg", myCookie.getValue());
 			RequestDispatcher dispatcher = request.getRequestDispatcher("home.jsp");
@@ -107,7 +108,7 @@ public class EnterServlet extends HttpServlet {
 	}
 	
 	private void handleReplace(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Hashtable<String, String> sessionHashTable = 
+		Hashtable<String, String> sessionTable = 
 				(Hashtable<String, String>) request.getServletContext().getAttribute("sessionTable");
 		Cookie myCookie = getExistingCookie(request);
 		String msgParam = request.getParameter("messagebox");
@@ -125,7 +126,7 @@ public class EnterServlet extends HttpServlet {
 		String cookieExpireTs = getExpiryTimeStamp(3);
 		//TODO implemenet location Metadata
 		String serializedSessionMsg = serializeSessionObject(welcomeMessage, SessionUtil.getVersionNumber(myCookie.getValue()), cookieExpireTs, "");
-		sessionHashTable.put(sessionId, serializedSessionMsg);
+		sessionTable.put(sessionId, serializedSessionMsg);
 		request.setAttribute("cookieMsg", myCookie.getValue());
 		response.addCookie(myCookie);
 		RequestDispatcher dispatcher = request.getRequestDispatcher("home.jsp");
@@ -133,7 +134,7 @@ public class EnterServlet extends HttpServlet {
 	}
 	
 	private void handleRefresh(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Hashtable<String, String> sessionHashTable = 
+		Hashtable<String, String> sessionTable = 
 				(Hashtable<String, String>) request.getServletContext().getAttribute("sessionTable");
 		Cookie myCookie = getExistingCookie(request);
 		if(myCookie != null) {
@@ -144,12 +145,12 @@ public class EnterServlet extends HttpServlet {
 		}
 		
 		String sessionId = SessionUtil.getSessionId(myCookie.getValue());
-		String welcomeMessage = (null == sessionHashTable.get(sessionId)) ? "Hello User" : sessionHashTable.get(sessionId).split("_")[0];
+		String welcomeMessage = (null == sessionTable.get(sessionId)) ? "Hello User" : sessionTable.get(sessionId).split("_")[0];
 		request.setAttribute("currentSessionId", sessionId);
 		String cookieExpireTs = getExpiryTimeStamp(3);
 		//TODO implemenet location Metadata
 		String serializedSessionMsg = serializeSessionObject(welcomeMessage, SessionUtil.getVersionNumber(myCookie.getValue()), cookieExpireTs, "");
-		sessionHashTable.put(sessionId, serializedSessionMsg);
+		sessionTable.put(sessionId, serializedSessionMsg);
 		myCookie.setMaxAge(3*60);
 		request.setAttribute("cookieMsg", myCookie.getValue());
 		response.addCookie(myCookie);
@@ -158,12 +159,12 @@ public class EnterServlet extends HttpServlet {
 	}
 	
 	private void handleLogout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Hashtable<String, String> sessionHashTable = 
-				(Hashtable<String, String>) request.getServletContext().getAttribute("sessionTable");
+		/*Hashtable<String, String> sessionTable = 
+				(Hashtable<String, String>) request.getServletContext().getAttribute("sessionTable");*/
 		Cookie myCookie = getExistingCookie(request);
 		if(myCookie != null) {
 			myCookie.setMaxAge(0);
-			sessionHashTable.remove(SessionUtil.getSessionId(myCookie.getValue()));
+			sessionTable.remove(SessionUtil.getSessionId(myCookie.getValue()));
 			response.addCookie(myCookie);
 		}
 		RequestDispatcher dispatcher = request.getRequestDispatcher("home.jsp");

@@ -6,6 +6,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 
+import com.servlet.EnterServlet;
+
 
 public class SMRPCServer {
 	public static void main(String[] args) {
@@ -17,6 +19,8 @@ public class SMRPCServer {
 class RPCRunnable implements Runnable {
 	private static final int portPROJ1BRPC = 5300;
 	private static final int packetSize = 512;
+	private static final String NOT_FOUND = "not found";
+	private static final String SESSION_WRITE_SUCCESS = "session written successfully";
 	
 	@Override
 	public void run() {
@@ -35,9 +39,9 @@ class RPCRunnable implements Runnable {
 				byte[] outBuf = null;
 				String payLoad = "";
 				RPCResponse rpcResponse = null;
-				switch( operationCode ) {
+				switch(operationCode) {
 					   case 1:
-						   payLoad = "1_dummyCookieData"; //read session id
+						   payLoad = getPayloadForSessionRead(rpcRequest.getPayload()); //rpcRequest will have session id in payload
 						   rpcResponse = new RPCResponse(rpcRequest.getCallId(), payLoad);
 						   break;
 					   case 2:
@@ -59,5 +63,37 @@ class RPCRunnable implements Runnable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private static String getPayloadForSessionRead(String incomingPayload) {
+	    String sessionId = incomingPayload;
+	    String output = EnterServlet.sessionTable.get(sessionId);
+	    if(null != output) {
+	    	String[] tokens = output.split("_");
+	    	return tokens[1] + "," + output;
+	    } else {
+	    	return NOT_FOUND;
+	    }
+	}
+	
+	private static String getPayloadForSessionWrite(String incomingPayload) {
+		String[] tokens = incomingPayload.split("_");
+		String sessionId = tokens[0];
+		String versionNumber = tokens[1];
+		String data = tokens[2];
+		String timeStamp = tokens[3];
+		
+		if(EnterServlet.sessionTable.containsKey(sessionId)) {
+			EnterServlet.sessionTable.put(sessionId, data);
+			return SESSION_WRITE_SUCCESS;
+		} else {
+			return NOT_FOUND;
+		}
+		
+	}
+	
+	//TODO
+	private static String getPayloadForExchangeView() {
+		return "";
 	}
 }
