@@ -76,16 +76,11 @@ public class SMRPCServer implements Runnable {
 		String data = tokens[2];
 		String timeStamp = tokens[3];
 		
-		if(EnterServlet.sessionTable.containsKey(sessionId)) {
-			EnterServlet.sessionTable.put(sessionId, data);
-			return SESSION_WRITE_SUCCESS;
-		} else {
-			return NOT_FOUND;
-		}
-		
+		EnterServlet.sessionTable.put(sessionId, data);
+			return SESSION_WRITE_SUCCESS;	
 	}
 	
-	//TODO
+	//Deserialize
 	private static String getPayloadForExchangeView() {
 		return "";
 	}
