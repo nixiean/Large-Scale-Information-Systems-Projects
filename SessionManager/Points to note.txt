@@ -11,6 +11,9 @@
 - Session Write: Return successful 
 
 
+- Session Read: 
+
+
 
 ******************
 	Delimiters
@@ -18,11 +21,12 @@
 - RPC 3 main tokens - #
 
 sessionData is always underscore separated
+sessionID is <number,srvrID>
 
 Payloads for:  
 - Session read
 	Client to Server
-		<number,srvrID> //sessionID
+		<sessionID> 
 	Server to Client
 		<versionNumber,sessionData>
 
