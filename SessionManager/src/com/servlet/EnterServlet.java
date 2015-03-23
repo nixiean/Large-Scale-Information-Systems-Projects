@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.rpc.SMRPCServer;
 import com.scheduler.SessionCleaner;
 import com.scheduler.ViewExchangerThread;
 import com.util.SessionUtil;
@@ -54,6 +55,9 @@ public class EnterServlet extends HttpServlet {
 		//context.setAttribute("myView", myView);
 		Runnable viewExchangerThread = new ViewExchangerThread();
 		executor.scheduleAtFixedRate(viewExchangerThread, 0, 1, TimeUnit.MINUTES);
+		
+		//start rpc server thread
+		executor.execute(new SMRPCServer());
 	}
 	
     /**

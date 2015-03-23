@@ -9,14 +9,7 @@ import java.net.SocketException;
 import com.servlet.EnterServlet;
 
 
-public class SMRPCServer {
-	public static void main(String[] args) {
-		new Thread(new RPCRunnable()).start();
-	}
-	
-}
-
-class RPCRunnable implements Runnable {
+public class SMRPCServer implements Runnable {
 	private static final int portPROJ1BRPC = 5300;
 	private static final int packetSize = 512;
 	private static final String NOT_FOUND = "not found";
@@ -96,4 +89,7 @@ class RPCRunnable implements Runnable {
 	private static String getPayloadForExchangeView() {
 		return "";
 	}
+	
 }
+
+
