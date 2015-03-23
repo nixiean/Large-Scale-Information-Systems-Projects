@@ -38,7 +38,7 @@ public class SMRPCServer implements Runnable {
 						   rpcResponse = new RPCResponse(rpcRequest.getCallId(), payLoad);
 						   break;
 					   case 2:
-						   payLoad = "session written successfully"; //write session id
+						   payLoad = getPayloadForSessionWrite(rpcRequest.getPayload()); //write session id
 						   rpcResponse = new RPCResponse(rpcRequest.getCallId(), payLoad);
 						   break;
 					   case 3:
