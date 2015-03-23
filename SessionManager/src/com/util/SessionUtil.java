@@ -94,13 +94,14 @@ public class SessionUtil {
 					String.valueOf(versionNumber), sessionData, cookieExpireTs,
 					destinationAddress) != SMRPCClient.FAILURE) {
 				retRandomServers.append(destinationAddress).append(",");
-				// Remove the server from list once the RPC call is made
-				activeServerId.remove(index);
 			} else {
 				retRandomServers.append("NULL").append(",");
 			}
+			// Remove the server from list once the RPC call is made
+			activeServerId.remove(index);
 		}
 
+		
 		return retRandomServers.toString();
 	}
 

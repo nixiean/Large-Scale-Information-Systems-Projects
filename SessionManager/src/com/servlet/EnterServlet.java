@@ -64,9 +64,9 @@ public class EnterServlet extends HttpServlet {
 		// ServerStatus(ServerStatusCode.UP));
 
 		// TODO Remove this hardcode
-		myView.put("10.132.1.156", new ServerStatus(ServerStatusCode.UP));
-		myView.put("10.148.9.209", new ServerStatus(ServerStatusCode.UP));
-		myView.put("10.148.9.133", new ServerStatus(ServerStatusCode.UP));
+		myView.put("192.168.43.232", new ServerStatus(ServerStatusCode.UP));
+		myView.put("192.168.43.181", new ServerStatus(ServerStatusCode.UP));
+		myView.put("192.168.43.205", new ServerStatus(ServerStatusCode.UP));
 
 		// Spawn the exchange view thread
 		Runnable viewExchangerThread = new ViewExchangerThread();
