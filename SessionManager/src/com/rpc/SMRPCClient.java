@@ -13,7 +13,7 @@ public class SMRPCClient {
 	private static final int portPROJ1BRPC = 5300;
 	private static final int packetSize = 512;
 	public static final String FAILURE = "fail";
-	private static final int SOCKET_TIMEOUT = 30 * 1000;
+	private static final int SOCKET_TIMEOUT = 5 * 1000;
 
 	private static SMRPCClient instance = null;;
 
