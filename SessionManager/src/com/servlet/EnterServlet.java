@@ -129,18 +129,19 @@ public class EnterServlet extends HttpServlet {
 			HttpServletResponse response, Cookie myCookie, String welcomeMessage)
 			throws ServletException, IOException {
 
+		//TODO Can we use cookieValue directly without checking for name?
 		String sessionId = SessionUtil.getSessionId(myCookie.getValue());
 		String sessionData = null;
 
 		// Check for local table
 		if (sessionTable.contains(sessionId)) {
-
 			sessionData = sessionTable.get(sessionId);
-
 		} else {
+			
+			String locationMetadata = SessionUtil.getSessionId(myCookie.getValue());
+			
 			// Do Session Read to check user's validity
-
-			// Return invalid Login if this check fails
+			sessionData = SessionUtil.getSessionDataFromBackupServers(sessionId,locationMetadata);
 		}
 		// Do random writes
 		if (sessionData != null) {
@@ -157,7 +158,7 @@ public class EnterServlet extends HttpServlet {
 				welcomeMessage = sessionTokens[1];
 			}
 
-			String cookieExpireTs = getExpiryTimeStamp(COOKIE_MAX_AGE);
+			String cookieExpireTs = SessionUtil.getExpiryTimeStamp(COOKIE_MAX_AGE);
 
 			sessionData = welcomeMessage + "_" + newVersionNumber + "_" + cookieExpireTs;
 
@@ -176,6 +177,9 @@ public class EnterServlet extends HttpServlet {
 			displayUserPage(request, response, newCookie, sessionId,
 					cookieExpireTs);
 
+		} else {
+
+			// TODO Return invalid Login if this check fails
 		}
 
 	}
@@ -201,7 +205,7 @@ public class EnterServlet extends HttpServlet {
 		String uniqueCookie = SessionUtil.getUniqueCookie();
 		Cookie newCookie = new Cookie(COOKIE_NAME, uniqueCookie);
 		String sessionId = SessionUtil.getSessionId(newCookie.getValue());
-		String cookieExpireTs = getExpiryTimeStamp(COOKIE_MAX_AGE);
+		String cookieExpireTs = SessionUtil.getExpiryTimeStamp(COOKIE_MAX_AGE);
 
 		displayUserPage(request, response, newCookie, sessionId, cookieExpireTs);
 	}
@@ -216,15 +220,6 @@ public class EnterServlet extends HttpServlet {
 		response.addCookie(myCookie);
 		RequestDispatcher dispatcher = request.getRequestDispatcher("home.jsp");
 		dispatcher.forward(request, response);
-	}
-
-	private static String getExpiryTimeStamp(int expiryMin) {
-		Date dNow = new Date();
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(dNow);
-		cal.add(Calendar.MINUTE, expiryMin);
-		dNow = cal.getTime();
-		return new Timestamp(dNow.getTime()).toString();
 	}
 
 	private Cookie getExistingCookie(HttpServletRequest request) {

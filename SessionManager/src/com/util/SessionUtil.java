@@ -36,18 +36,22 @@ public class SessionUtil {
 		long versionNumber = 1L;
 		String cookieExpireTs = getExpiryTimeStamp(EnterServlet.COOKIE_MAX_AGE);
 
-		String sessionData = "Hello User" + "_" + versionNumber + "_" + cookieExpireTs;
-		
-		//Update the local session table. 
-		EnterServlet.sessionTable.put(sessionId,sessionData);
-		
+		String sessionData = "Hello User" + "_" + versionNumber + "_"
+				+ cookieExpireTs;
+
+		// Update the local session table.
+		EnterServlet.sessionTable.put(sessionId, sessionData);
+
 		// Choose resilience - 1 backups
-		String serverBackups = getRandomBackupServers(localSvrId,
-				sessionId, versionNumber, sessionData, cookieExpireTs);
+		String serverBackups = getRandomBackupServers(localSvrId, sessionId,
+				versionNumber, sessionData, cookieExpireTs);
 
 		return serializeCookieData(sessionId, versionNumber, serverBackups);
 	}
 
+	/*
+	 * Canonicalize the data which has to be inserted in user cookie
+	 */
 	public static String serializeCookieData(String sessionId,
 			long versionNumber, String serverBackups) {
 		StringBuilder cookieData = new StringBuilder();
@@ -56,6 +60,11 @@ public class SessionUtil {
 		return cookieData.toString();
 	}
 
+	/*
+	 * Make Session Writes to random servers
+	 * 
+	 * @return List of servers which were identified as backups
+	 */
 	public static String getRandomBackupServers(String localSvrId,
 			String sessionId, long versionNumber, String sessionData,
 			String cookieExpireTs) {
@@ -73,8 +82,10 @@ public class SessionUtil {
 			}
 		}
 
+		// Make the RPC calls by picking a random server one by one
 		SMRPCClient rpcClient = SMRPCClient.getInstance();
-		StringBuilder retRandomServers = new StringBuilder(localSvrId).append(",");
+		StringBuilder retRandomServers = new StringBuilder(localSvrId)
+				.append(",");
 		Random rand = new Random();
 		while (numRandomServers-- > 0) {
 			int index = rand.nextInt(activeServerId.size());
@@ -83,8 +94,9 @@ public class SessionUtil {
 					String.valueOf(versionNumber), sessionData, cookieExpireTs,
 					destinationAddress) != SMRPCClient.FAILURE) {
 				retRandomServers.append(destinationAddress).append(",");
+				// Remove the server from list once the RPC call is made
 				activeServerId.remove(index);
-			} else { 
+			} else {
 				retRandomServers.append("NULL").append(",");
 			}
 		}
@@ -92,10 +104,36 @@ public class SessionUtil {
 		return retRandomServers.toString();
 	}
 
-	public static void main(String[] args) {
-		System.out.println(getIpAddress());
+	/*
+	 * Check for the session ID from the backup servers to validate the user
+	 * 
+	 * @ return sessionData if available else null
+	 */
+	public static String getSessionDataFromBackupServers(String sessionId,
+			String locationMetadata) {
+		String[] backupServers = locationMetadata.split(",");
+
+		// Make the RPC calls by iterating through backup server one by one
+		SMRPCClient rpcClient = SMRPCClient.getInstance();
+
+		for (String backupServer : backupServers) {
+
+			if (backupServer != null) {
+				String receivedData = rpcClient.sendForSessionRead(sessionId,
+						backupServer);
+				if (receivedData != SMRPCClient.FAILURE) {
+					return receivedData.split(",")[1];
+				}
+			}
+
+		}
+		//If the call to servers failed or none of the servers contain the sessionId
+		return null;
 	}
 
+	/*
+	 * Returns the ipaddress of the system. Takes care of AWS architecture
+	 */
 	public static String getIpAddress() {
 		try {
 			if (localIpAddress == null) {
@@ -138,15 +176,7 @@ public class SessionUtil {
 		return parsedStr[2];
 	}
 
-	// helper method to get the updated cookie with new version number
-	public static String getUpdatedCookieValue(String oldCookie,
-			int newVersionNumber) {
-		String[] parsedStr = oldCookie.split("_");
-		parsedStr[1] = Integer.toString(newVersionNumber);
-		return parsedStr[0] + "_" + parsedStr[1] + "_" + parsedStr[2];
-	}
-
-	private static String getExpiryTimeStamp(int expiryMin) {
+	public static String getExpiryTimeStamp(int expiryMin) {
 		Date dNow = new Date();
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(dNow);

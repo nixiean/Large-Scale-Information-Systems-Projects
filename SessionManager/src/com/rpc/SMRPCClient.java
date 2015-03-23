@@ -63,8 +63,7 @@ public class SMRPCClient {
 
 			String received = new String(packet.getData(), 0,
 					packet.getLength());
-			// display response
-			// System.out.println("Response: " + received);
+
 			socket.close();
 			return received;
 		} catch (Exception e) {

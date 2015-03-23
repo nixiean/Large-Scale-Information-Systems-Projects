@@ -24,10 +24,14 @@
 ******************
 	Delimiters
 ******************
+sessionData <WelcomeMessage_VersionNumber_TimeStamp>
+sessionID is <number,srvrID>
+
+Session Table 
+<SessionID,sessionData>
+
 - RPC 3 main tokens - #
 
-sessionData is always underscore separated
-sessionID is <number,srvrID>
 
 Payloads for:  
 - Session read
