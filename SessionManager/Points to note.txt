@@ -50,7 +50,7 @@ Payloads for:
 	Client to Server
 		<srvrID1,status,ts1;srvrID2,status,ts2>
 	Server to Client 
-		<successMessage>
+		<srvrID1,status,ts1;srvrID2,status,ts2>
 
 
 

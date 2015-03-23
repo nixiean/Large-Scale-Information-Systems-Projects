@@ -6,10 +6,12 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import com.servlet.EnterServlet;
 import com.view.ServerStatus;
 import com.view.ServerStatus.ServerStatusCode;
+import com.view.ViewUtils;
 
 public class SMRPCServer implements Runnable {
 	private static final int portPROJ1BRPC = 5300;
@@ -75,6 +77,7 @@ public class SMRPCServer implements Runnable {
 
 	/*
 	 * Check if the sessionID is present in the local session table
+	 * 
 	 * @return <versionNumber,sessionData> OR Not found
 	 */
 	private static String getPayloadForSessionRead(String incomingPayload) {
@@ -90,25 +93,40 @@ public class SMRPCServer implements Runnable {
 
 	/*
 	 * Write the session data to local session table
-	 * @return Success message 
+	 * 
+	 * @return Success message
 	 */
 	private static String getPayloadForSessionWrite(String incomingPayload) {
 		String[] tokens = incomingPayload.split(",");
 		String sessionId = tokens[0];
-		//String versionNumber = tokens[1];
+		// String versionNumber = tokens[1];
 		String data = tokens[2];
-		//String timeStamp = tokens[3];
+		// String timeStamp = tokens[3];
 
 		EnterServlet.sessionTable.put(sessionId, data);
 		return SESSION_WRITE_SUCCESS;
 	}
 
 	/*
-	 * Get all the server triplets and exchange the views
-	 * @return Success message 
+	 * Get and send all the server triplets and exchange the views
+	 * 
+	 * @return Server triplets built from local view
 	 */
 	private static String getPayloadForExchangeView(String incomingPayload) {
 
+		//First build the view to be returned
+		StringBuilder serverTriplets = new StringBuilder();
+		for (Entry<String, ServerStatus> serverEntry : EnterServlet.myView
+				.entrySet()) {
+			String serverID = serverEntry.getKey();
+			ServerStatus serverStatus = serverEntry.getValue();
+			serverTriplets.append(serverID).append(",")
+					.append(serverStatus.getStatus()).append(",")
+					.append(serverStatus.getTime()).append(";");
+
+		}
+
+		//Extract the triplets and put it in hashtable
 		if (incomingPayload != null) {
 			// Prepare the view with which local view has to be exchanged
 			HashMap<String, ServerStatus> hisView = new HashMap<String, ServerStatus>();
@@ -121,10 +139,10 @@ public class SMRPCServer implements Runnable {
 				status.setTime(Long.parseLong(serverDetails[2]));
 				hisView.put(serverID, status);
 			}
-
+			ViewUtils.updateLocalView(hisView);
 		}
 
-		return EXCHANGE_VIEW_SUCCESS;
+		return serverTriplets.toString();
 	}
 
 }

@@ -3,34 +3,32 @@ package com.view;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import com.rpc.SMRPCClient;
 import com.servlet.EnterServlet;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import com.util.AWSSimpleDbUtil;
+import com.view.ServerStatus.ServerStatusCode;
 
 public class ViewUtils {
-	//exchange with simpledb
-	private static HashMap<String, ServerStatus> hisView ;
+	// exchange with simpledb
 	private static HashMap<String, ServerStatus> myView = EnterServlet.myView;
-	
+
 	/*
 	 * Init for exchanging view with simpleDB
 	 */
 	public static void exchangeViewWithSimpleDb() {
 		AWSSimpleDbUtil.initSimpleDbInstance();
-		hisView = AWSSimpleDbUtil.awsSimpleDBGet();
-		//merge view here
-		updateLocalView();
+		HashMap<String, ServerStatus> hisView = AWSSimpleDbUtil
+				.awsSimpleDBGet();
+		// merge view here
+		updateLocalView(hisView);
 		AWSSimpleDbUtil.awsSimpleDBPut(myView);
 	}
-	
-	/*public static void main(String[] args) {
-		EnterServlet.myView.put("192.168.0.1", new ServerStatus(ServerStatusCode.UP));
-		exchangeViewWithSimpleDb();
-	}*/
-	
+
 	/*
 	 * Exchange the views between local and foreign view
 	 */
-	private static void updateLocalView() {
+	public static void updateLocalView(HashMap<String, ServerStatus> hisView) {
 		for (Entry<String, ServerStatus> serverEntry : hisView.entrySet()) {
 			String serverID = serverEntry.getKey();
 			ServerStatus serverStatus = serverEntry.getValue();
@@ -47,15 +45,36 @@ public class ViewUtils {
 		}
 		hisView.clear();
 	}
-	
+
 	/*
 	 * Init for exchanging view with server.
-	 * @param foreign server's view is passed  
+	 * 
+	 * @param foreign server's view is passed
 	 */
-	public static void exchangeViewWithServer(HashMap<String, ServerStatus> foreignServerView) {
-		hisView = foreignServerView; 
-		//Merge View here
-		updateLocalView();
+	public static void exchangeViewWithServer(String gossipPartnerIP) {
+
+		// Make the RPC calls with the server and exchange the view
+		SMRPCClient rpcClient = SMRPCClient.getInstance();
+		String receivedMessage = rpcClient.sendForExchangeViews(myView,
+				gossipPartnerIP);
+		
+		//Get the server details from the foreign view
+		if (receivedMessage != SMRPCClient.FAILURE) {
+			HashMap<String, ServerStatus> hisView = new HashMap<String, ServerStatus>();
+			String []serverTriplets = receivedMessage.split("#")[2].split(";");
+			
+			for(String serverTriplet : serverTriplets) {
+				String serverDetails[] = serverTriplet.split(",");
+				String serverID = serverDetails[0];
+				ServerStatus status = new ServerStatus(
+						ServerStatusCode.valueOf(serverDetails[1]));
+				status.setTime(Long.parseLong(serverDetails[2]));
+				hisView.put(serverID, status);
+			}
+			
+			// Merge View here
+			updateLocalView(hisView);
+		}
 	}
-	
+
 }

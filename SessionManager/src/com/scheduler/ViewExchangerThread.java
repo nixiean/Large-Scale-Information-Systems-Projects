@@ -19,6 +19,7 @@ public class ViewExchangerThread implements Runnable{
 			ViewUtils.exchangeViewWithSimpleDb();
 		} else {
 			//Make RPC and exchange with server
+			ViewUtils.exchangeViewWithServer(gossipPartnerIp);
 		}
 	}
 	
