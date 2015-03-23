@@ -16,7 +16,7 @@ import com.view.ServerStatus;
 import com.view.ServerStatus.ServerStatusCode;
 
 public class AWSSimpleDbUtil {
-
+	
 	private static AmazonSimpleDBClient amazonSimpleDBClient = null;
 	private static String awsSimpleDBDelimiter = ",";
 	private static String domain = "servers";
@@ -25,9 +25,17 @@ public class AWSSimpleDbUtil {
 	
 	public static void initSimpleDbInstance() {
 		if(amazonSimpleDBClient == null) {
-			BasicAWSCredentials credentials = new BasicAWSCredentials(accessKey,secretKey);
+			BasicAWSCredentials credentials = new BasicAWSCredentials(getAccessKeyFromEnv(), getSecretKeyFromEnv());
 			amazonSimpleDBClient = new AmazonSimpleDBClient(credentials);
 		} 
+	}
+	
+	private static String getAccessKeyFromEnv() {
+		return System.getenv("AWS_ACCESS_KEY");
+	}
+	
+	private static String getSecretKeyFromEnv() {
+		return System.getenv("AWS_SECRET_KEY");
 	}
 	
 	public static void awsSimpleDBPut(HashMap<String, ServerStatus> myView) {
