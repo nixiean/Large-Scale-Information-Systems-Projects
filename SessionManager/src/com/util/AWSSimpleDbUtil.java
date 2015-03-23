@@ -16,8 +16,7 @@ import com.view.ServerStatus;
 import com.view.ServerStatus.ServerStatusCode;
 
 public class AWSSimpleDbUtil {
-	private static final String accessKey = "AKIAJN7NWQJ6QH5WP47A";
-	private static final String secretKey = "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";
+
 	private static AmazonSimpleDBClient amazonSimpleDBClient = null;
 	private static String awsSimpleDBDelimiter = ",";
 	private static String domain = "servers";
