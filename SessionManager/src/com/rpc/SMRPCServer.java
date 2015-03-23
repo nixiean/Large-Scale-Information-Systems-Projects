@@ -93,7 +93,7 @@ public class SMRPCServer implements Runnable {
 	 * @return Success message 
 	 */
 	private static String getPayloadForSessionWrite(String incomingPayload) {
-		String[] tokens = incomingPayload.split("_");
+		String[] tokens = incomingPayload.split(",");
 		String sessionId = tokens[0];
 		//String versionNumber = tokens[1];
 		String data = tokens[2];
@@ -114,7 +114,7 @@ public class SMRPCServer implements Runnable {
 			HashMap<String, ServerStatus> hisView = new HashMap<String, ServerStatus>();
 			String[] triplets = incomingPayload.split(";");
 			for (String serverTriplet : triplets) {
-				String serverDetails[] = serverTriplet.split("_");
+				String serverDetails[] = serverTriplet.split(",");
 				String serverID = serverDetails[0];
 				ServerStatus status = new ServerStatus(
 						ServerStatusCode.valueOf(serverDetails[1]));
