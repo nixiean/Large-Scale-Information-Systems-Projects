@@ -59,7 +59,7 @@ public class SessionUtil {
 	public static String getRandomBackupServers(String localSvrId,
 			String sessionId, long versionNumber, String sessionData,
 			String cookieExpireTs) {
-		int numRandomServers = EnterServlet.RESILIENCY - 1;
+		int numRandomServers = EnterServlet.RESILIENCY;
 		List<String> activeServerId = new ArrayList<String>();
 
 		// List only those servers which are UP

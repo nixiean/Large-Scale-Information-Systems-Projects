@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 import com.view.ServerStatus;
 
 public class SMRPCClient {
-	private static final int portPROJ1BRPC = 5300;
+	private static final int portPROJ1BRPC = 9119;
 	private static final int packetSize = 512;
 	public static final String FAILURE = "fail";
 	private static final int SOCKET_TIMEOUT = 30 * 1000;
@@ -32,9 +32,10 @@ public class SMRPCClient {
 		// create RPC request packet
 		// send to destination
 		// wait for response and reply
+		DatagramSocket socket = null;
 		try {
 			// get a datagram socket
-			DatagramSocket socket = new DatagramSocket();
+			socket = new DatagramSocket();
 			socket.setSoTimeout(SOCKET_TIMEOUT);
 
 			// send request
@@ -67,6 +68,7 @@ public class SMRPCClient {
 			socket.close();
 			return received;
 		} catch (Exception e) {
+			if(socket!=null) socket.close();
 			e.printStackTrace();
 			return FAILURE;
 		}
@@ -78,9 +80,10 @@ public class SMRPCClient {
 		// create RPC request packet
 		// send to destination
 		// wait for response and reply
+		DatagramSocket socket = null;
 		try {
 			// get a datagram socket
-			DatagramSocket socket = new DatagramSocket();
+			socket = new DatagramSocket();
 			socket.setSoTimeout(SOCKET_TIMEOUT);
 
 			// send request
@@ -112,6 +115,7 @@ public class SMRPCClient {
 			socket.close();
 			return received;
 		} catch (Exception e) {
+			if(socket!=null) socket.close();
 			e.printStackTrace();
 			return FAILURE;
 		}
@@ -123,9 +127,10 @@ public class SMRPCClient {
 		// create RPC request packet
 		// send to destination
 		// wait for response and reply
+		DatagramSocket socket = null;
 		try {
 			// get a datagram socket
-			DatagramSocket socket = new DatagramSocket();
+			socket = new DatagramSocket();
 			socket.setSoTimeout(SOCKET_TIMEOUT);
 
 			// send request
@@ -156,6 +161,7 @@ public class SMRPCClient {
 			socket.close();
 			return received;
 		} catch (Exception e) {
+			if(socket!=null) socket.close();
 			e.printStackTrace();
 			return FAILURE;
 		}
@@ -163,7 +169,7 @@ public class SMRPCClient {
 	}
 
 	/*
-	 * Build the payload from the local view 
+	 * Build the payload from the local view
 	 */
 	private static String buildPayLoadForExchangeView(
 			HashMap<String, ServerStatus> myView) {
