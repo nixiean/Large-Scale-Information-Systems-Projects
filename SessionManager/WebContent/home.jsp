@@ -12,8 +12,6 @@
 </head>
 <body>
 	<%
-		Hashtable<String, String> sessionHashTable = (Hashtable<String, String>) request
-				.getServletContext().getAttribute("sessionTable");
 		String welcomeMsg = null;
 		String versionNumber = null;
 		String timeStamp = null;
@@ -21,7 +19,8 @@
 				.getAttribute("currentSessionId");
 		String serializedSessionMsg = null;
 		if (sessionIdParam != null) {
-			serializedSessionMsg = sessionHashTable.get(sessionIdParam);
+			//TODO
+			serializedSessionMsg = EnterServlet.sessionTable.get(sessionIdParam);
 			String[] tokens = serializedSessionMsg.split("_");
 			welcomeMsg = tokens[0];
 			versionNumber = tokens[1];

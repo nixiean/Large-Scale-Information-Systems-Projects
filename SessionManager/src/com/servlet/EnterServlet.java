@@ -1,6 +1,7 @@
 package com.servlet;
 
 import java.io.IOException;
+import java.nio.channels.SeekableByteChannel;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
@@ -20,6 +21,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.rpc.SMRPCClient;
 import com.rpc.SMRPCServer;
 import com.scheduler.SessionCleaner;
 import com.scheduler.ViewExchangerThread;
@@ -33,154 +35,189 @@ import com.view.ServerStatus.ServerStatusCode;
 @WebServlet("/EnterServlet")
 public class EnterServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	// Local view with server details
 	public static HashMap<String, ServerStatus> myView = new HashMap<String, ServerStatus>();
+	// User session details
 	public static Hashtable<String, String> sessionTable = new Hashtable<String, String>();
-	
-	
+
+	public static final int COOKIE_MAX_AGE = 3; // 3 minutes
+	private static final long SESSION_CLEANER_INTERVAL = 5; // 5 minutes
+	private static final long EXCHANGE_VIEW_INTERVAL = 1; // 1 minute
+	public static final int RESILIENCY = 2;
+
+	private static final String COOKIE_NAME = "CS5300PROJ1SESSION";
+
 	@Override
 	public void init() throws ServletException {
 		super.init();
-		ServletContext context = getServletContext();
-		//initialize the hashtable once the container starts
-		//Hashtable<String, String> sessionTable = new Hashtable<String, String>();
-		context.setAttribute("sessionTable", sessionTable);
-		
-		//Initialize the session cleaner
-		ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+		// Initialize the session cleaner
+		ScheduledExecutorService executor = Executors
+				.newSingleThreadScheduledExecutor();
 		Runnable sessionCleaner = new SessionCleaner(sessionTable);
-		//spawn the sessionCleaner thread in every 5 mins, as cookies get timout by 3 mins
-		executor.scheduleAtFixedRate(sessionCleaner, 0, 5, TimeUnit.MINUTES);
-		
-		//myView.put(SessionUtil.getIpAddress(), new ServerStatus(ServerStatusCode.UP));
-		
-		//TODO Remove this hardcode and use SimpleDB
+		// spawn the sessionCleaner thread in every 5 mins, as cookies get
+		// timeout by 3 mins
+		executor.scheduleAtFixedRate(sessionCleaner, 0,
+				SESSION_CLEANER_INTERVAL, TimeUnit.MINUTES);
+
+		// TODO Uncomment this
+		// myView.put(SessionUtil.getIpAddress(), new
+		// ServerStatus(ServerStatusCode.UP));
+
+		// TODO Remove this hardcode
 		myView.put("10.132.1.156", new ServerStatus(ServerStatusCode.UP));
 		myView.put("10.148.9.209", new ServerStatus(ServerStatusCode.UP));
 		myView.put("10.148.9.133", new ServerStatus(ServerStatusCode.UP));
-		
-		//context.setAttribute("myView", myView);
+
+		// Spawn the exchange view thread
 		Runnable viewExchangerThread = new ViewExchangerThread();
-		executor.scheduleAtFixedRate(viewExchangerThread, 0, 1, TimeUnit.MINUTES);
-		
-		//start rpc server thread
+		executor.scheduleAtFixedRate(viewExchangerThread, 0,
+				EXCHANGE_VIEW_INTERVAL, TimeUnit.MINUTES);
+
+		// Start daemon RPC server thread
 		executor.execute(new SMRPCServer());
 	}
-	
-    /**
-     * Default constructor. 
-     */
-    public EnterServlet() {
-    }
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 * Default constructor.
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		Hashtable<String, String> sessionTable = 
-				(Hashtable<String, String>) request.getServletContext().getAttribute("sessionTable");
+	public EnterServlet() {
+	}
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+	 *      response)
+	 */
+	protected void doGet(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+
+		Cookie myCookie = getExistingCookie(request);
+		if (myCookie == null) {
+			// New request
+			handleNewUser(request, response);
+		}
+
 		String param = request.getParameter("submit");
 		boolean isRefresh = null != param ? param.equals("Refresh") : false;
 		boolean isReplace = null != param ? param.equals("Replace") : false;
 		boolean isLogout = null != param ? param.equals("Logout") : false;
 
-		if(isRefresh) {
-			handleRefresh(request, response);
-		} else if(isReplace) {
-			handleReplace(request, response);
-		} else if(isLogout) {
-			handleLogout(request, response);
+		if (isRefresh) {
+			handleReturningUser(request, response, myCookie, null);
+		} else if (isReplace) {
+			String msgParam = request.getParameter("messagebox");
+			// TODO Check if it should be null or Hello User
+			String welcomeMessage = (null != msgParam) ? msgParam
+					: "Hello User";
+			handleReturningUser(request, response, myCookie, welcomeMessage);
+		} else if (isLogout) {
+			handleLogout(request, response, myCookie);
 		} else {
-		
-			Cookie myCookie = getExistingCookie(request); 
-			if(myCookie == null) {
-				String uniqueCookie = SessionUtil.getUniqueCookie();
-				myCookie = new Cookie("CS5300PROJ1SESSION", uniqueCookie);
-			} else {
-				incrementVersionNumber(myCookie);
+
+			/*
+			 * // Get the cookie from the user request Cookie myCookie =
+			 * getExistingCookie(request); if (myCookie == null) { // New
+			 * request handleNewUser(request, response); } else { //TODO WHen
+			 * will this case arise and what to do? // Returning user
+			 * handleReturningUser(request, response, myCookie, null);
+			 * 
+			 * }
+			 */
+		}
+	}
+
+	private void handleReturningUser(HttpServletRequest request,
+			HttpServletResponse response, Cookie myCookie, String welcomeMessage)
+			throws ServletException, IOException {
+
+		String sessionId = SessionUtil.getSessionId(myCookie.getValue());
+		String sessionData = null;
+
+		// Check for local table
+		if (sessionTable.contains(sessionId)) {
+
+			sessionData = sessionTable.get(sessionId);
+
+		} else {
+			// Do Session Read to check user's validity
+
+			// Return invalid Login if this check fails
+		}
+		// Do random writes
+		if (sessionData != null) {
+
+			String[] sessionTokens = sessionData.split("_");
+
+			String localSvrId = SessionUtil.getIpAddress();
+
+			// version number is initialized to 1
+			long newVersionNumber = Long.parseLong(sessionTokens[1]) + 1;
+
+			if (welcomeMessage != null) {
+				// Non replace message case
+				welcomeMessage = sessionTokens[1];
 			}
-			String sessionId = SessionUtil.getSessionId(myCookie.getValue());
-			request.setAttribute("currentSessionId", sessionId);
-			String welcomeMessage = (null == sessionTable.get(sessionId)) ? "Hello User" : (sessionTable.get(sessionId).split("_"))[0];
-			myCookie.setMaxAge(3*60);
-			String cookieExpireTs = getExpiryTimeStamp(3);
-			request.setAttribute("timeStamp", cookieExpireTs);
-			
-			
-			//TODO implemenet location Metadata
-			String serializedSessionMsg = serializeSessionObject(welcomeMessage, SessionUtil.getVersionNumber(myCookie.getValue()), cookieExpireTs, "");
-			sessionTable.put(sessionId, serializedSessionMsg);
-			response.addCookie(myCookie);
-			request.setAttribute("cookieMsg", myCookie.getValue());
-			RequestDispatcher dispatcher = request.getRequestDispatcher("home.jsp");
-			dispatcher.forward(request, response);
+
+			String cookieExpireTs = getExpiryTimeStamp(COOKIE_MAX_AGE);
+
+			sessionData = welcomeMessage + "_" + newVersionNumber + "_" + cookieExpireTs;
+
+			// Update the local session table.
+			EnterServlet.sessionTable.put(sessionId, sessionData);
+
+			// Choose resilience - 1 backups
+			String serverBackups = SessionUtil.getRandomBackupServers(
+					localSvrId, sessionId, newVersionNumber, sessionData,
+					cookieExpireTs);
+
+			Cookie newCookie = new Cookie(COOKIE_NAME,
+					SessionUtil.serializeCookieData(sessionId,
+							newVersionNumber, serverBackups));
+
+			displayUserPage(request, response, newCookie, sessionId,
+					cookieExpireTs);
+
 		}
+
 	}
-	
-	private void handleReplace(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Hashtable<String, String> sessionTable = 
-				(Hashtable<String, String>) request.getServletContext().getAttribute("sessionTable");
-		Cookie myCookie = getExistingCookie(request);
-		String msgParam = request.getParameter("messagebox");
-		String welcomeMessage = (null != msgParam) ? msgParam : "Hello User";
-		if(myCookie != null) {
-			incrementVersionNumber(myCookie);
-			myCookie.setMaxAge(3*60);
-		} else {
-			String uniqueCookie = SessionUtil.getUniqueCookie();
-			myCookie = new Cookie("CS5300PROJ1SESSION", uniqueCookie);
-		}
-		
-		String sessionId = SessionUtil.getSessionId(myCookie.getValue());
+
+	private void displayUserPage(HttpServletRequest request,
+			HttpServletResponse response, Cookie newCookie, String sessionId,
+			String cookieExpireTs) throws ServletException, IOException {
+		newCookie.setMaxAge(COOKIE_MAX_AGE * 60);
+
 		request.setAttribute("currentSessionId", sessionId);
-		String cookieExpireTs = getExpiryTimeStamp(3);
-		//TODO implemenet location Metadata
-		String serializedSessionMsg = serializeSessionObject(welcomeMessage, SessionUtil.getVersionNumber(myCookie.getValue()), cookieExpireTs, "");
-		sessionTable.put(sessionId, serializedSessionMsg);
-		request.setAttribute("cookieMsg", myCookie.getValue());
+		request.setAttribute("timeStamp", cookieExpireTs);
+
+		response.addCookie(newCookie);
+		request.setAttribute("cookieMsg", newCookie.getValue());
+
+		RequestDispatcher dispatcher = request.getRequestDispatcher("home.jsp");
+		dispatcher.forward(request, response);
+
+	}
+
+	private void handleNewUser(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		String uniqueCookie = SessionUtil.getUniqueCookie();
+		Cookie newCookie = new Cookie(COOKIE_NAME, uniqueCookie);
+		String sessionId = SessionUtil.getSessionId(newCookie.getValue());
+		String cookieExpireTs = getExpiryTimeStamp(COOKIE_MAX_AGE);
+
+		displayUserPage(request, response, newCookie, sessionId, cookieExpireTs);
+	}
+
+	private void handleLogout(HttpServletRequest request,
+			HttpServletResponse response, Cookie myCookie)
+			throws ServletException, IOException {
+
+		myCookie.setMaxAge(0);
+		// TODO Check if stale session Data has to be removed or not
+		sessionTable.remove(SessionUtil.getSessionId(myCookie.getValue()));
 		response.addCookie(myCookie);
 		RequestDispatcher dispatcher = request.getRequestDispatcher("home.jsp");
 		dispatcher.forward(request, response);
 	}
-	
-	private void handleRefresh(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Hashtable<String, String> sessionTable = 
-				(Hashtable<String, String>) request.getServletContext().getAttribute("sessionTable");
-		Cookie myCookie = getExistingCookie(request);
-		if(myCookie != null) {
-			incrementVersionNumber(myCookie);
-		} else {
-			String uniqueCookie = SessionUtil.getUniqueCookie();
-			myCookie = new Cookie("CS5300PROJ1SESSION", uniqueCookie);
-		}
-		
-		String sessionId = SessionUtil.getSessionId(myCookie.getValue());
-		String welcomeMessage = (null == sessionTable.get(sessionId)) ? "Hello User" : sessionTable.get(sessionId).split("_")[0];
-		request.setAttribute("currentSessionId", sessionId);
-		String cookieExpireTs = getExpiryTimeStamp(3);
-		//TODO implemenet location Metadata
-		String serializedSessionMsg = serializeSessionObject(welcomeMessage, SessionUtil.getVersionNumber(myCookie.getValue()), cookieExpireTs, "");
-		sessionTable.put(sessionId, serializedSessionMsg);
-		myCookie.setMaxAge(3*60);
-		request.setAttribute("cookieMsg", myCookie.getValue());
-		response.addCookie(myCookie);
-		RequestDispatcher dispatcher = request.getRequestDispatcher("home.jsp");
-		dispatcher.forward(request, response);
-	}
-	
-	private void handleLogout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		/*Hashtable<String, String> sessionTable = 
-				(Hashtable<String, String>) request.getServletContext().getAttribute("sessionTable");*/
-		Cookie myCookie = getExistingCookie(request);
-		if(myCookie != null) {
-			myCookie.setMaxAge(0);
-			sessionTable.remove(SessionUtil.getSessionId(myCookie.getValue()));
-			response.addCookie(myCookie);
-		}
-		RequestDispatcher dispatcher = request.getRequestDispatcher("home.jsp");
-		dispatcher.forward(request, response);
-	}
-	
+
 	private static String getExpiryTimeStamp(int expiryMin) {
 		Date dNow = new Date();
 		Calendar cal = Calendar.getInstance();
@@ -189,36 +226,27 @@ public class EnterServlet extends HttpServlet {
 		dNow = cal.getTime();
 		return new Timestamp(dNow.getTime()).toString();
 	}
-	
+
 	private Cookie getExistingCookie(HttpServletRequest request) {
 		Cookie[] cookies = request.getCookies();
-		Cookie myCookie = null; 
-		if(cookies != null) {
-			for(Cookie cookie : cookies) {
-				if(cookie.getName().equals("CS5300PROJ1SESSION")) {
+		Cookie myCookie = null;
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				if (cookie.getName().equals(COOKIE_NAME)) {
 					myCookie = cookie;
 				}
 			}
 		}
 		return myCookie;
 	}
-	
-	private static synchronized void incrementVersionNumber(Cookie cookie) {
-		String oldVal = cookie.getValue();
-		int versionNumber = Integer.parseInt(SessionUtil.getVersionNumber(oldVal));
-		versionNumber++;
-		String newVal = SessionUtil.getUpdatedCookieValue(oldVal, versionNumber);
-		cookie.setValue(newVal);
-	}
-	
-	private static String serializeSessionObject(String versionNumber, String message, String timeStamp, String locationMetadata) {
-		return versionNumber + "_" + message + "_" + timeStamp + "_" + locationMetadata;
-	}
+
 
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+	 *      response)
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);
 	}

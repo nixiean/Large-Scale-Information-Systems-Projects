@@ -12,14 +12,14 @@ import com.view.ServerStatus;
 public class SMRPCClient {
 	private static final int portPROJ1BRPC = 5300;
 	private static final int packetSize = 512;
-	private static final String FAILURE = "fail";
+	public static final String FAILURE = "fail";
 	private static final int SOCKET_TIMEOUT = 30 * 1000;
 
-	SMRPCClient instance = null;;
+	private static SMRPCClient instance = null;;
 
 	// create a singleton instance
-	public SMRPCClient getInstance() {
-		if (instance != null) {
+	public static SMRPCClient getInstance() {
+		if (instance == null) {
 			instance = new SMRPCClient();
 		}
 		return instance;
