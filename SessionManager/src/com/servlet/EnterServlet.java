@@ -85,6 +85,8 @@ public class EnterServlet extends HttpServlet {
 			if(myCookie == null) {
 				String uniqueCookie = SessionUtil.getUniqueCookie();
 				myCookie = new Cookie("CS5300PROJ1SESSION", uniqueCookie);
+			} else {
+				incrementVersionNumber(myCookie);
 			}
 			String sessionId = SessionUtil.getSessionId(myCookie.getValue());
 			request.setAttribute("currentSessionId", sessionId);
@@ -92,7 +94,8 @@ public class EnterServlet extends HttpServlet {
 			myCookie.setMaxAge(3*60);
 			String cookieExpireTs = getExpiryTimeStamp(3);
 			request.setAttribute("timeStamp", cookieExpireTs);
-			incrementVersionNumber(myCookie);
+			
+			
 			//TODO implemenet location Metadata
 			String serializedSessionMsg = serializeSessionObject(welcomeMessage, SessionUtil.getVersionNumber(myCookie.getValue()), cookieExpireTs, "");
 			sessionHashTable.put(sessionId, serializedSessionMsg);
