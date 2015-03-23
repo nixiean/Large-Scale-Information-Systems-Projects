@@ -51,7 +51,13 @@ public class EnterServlet extends HttpServlet {
 		//spawn the sessionCleaner thread in every 5 mins, as cookies get timout by 3 mins
 		executor.scheduleAtFixedRate(sessionCleaner, 0, 5, TimeUnit.MINUTES);
 		
-		myView.put(SessionUtil.getIpAddress(), new ServerStatus(ServerStatusCode.UP));
+		//myView.put(SessionUtil.getIpAddress(), new ServerStatus(ServerStatusCode.UP));
+		
+		//TODO Remove this hardcode and use SimpleDB
+		myView.put("10.132.1.156", new ServerStatus(ServerStatusCode.UP));
+		myView.put("10.148.9.209", new ServerStatus(ServerStatusCode.UP));
+		myView.put("10.148.9.133", new ServerStatus(ServerStatusCode.UP));
+		
 		//context.setAttribute("myView", myView);
 		Runnable viewExchangerThread = new ViewExchangerThread();
 		executor.scheduleAtFixedRate(viewExchangerThread, 0, 1, TimeUnit.MINUTES);
