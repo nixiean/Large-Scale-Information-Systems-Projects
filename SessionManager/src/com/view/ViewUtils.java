@@ -11,6 +11,9 @@ public class ViewUtils {
 	private static HashMap<String, ServerStatus> hisView ;
 	private static HashMap<String, ServerStatus> myView = EnterServlet.myView;
 	
+	/*
+	 * Init for exchanging view with simpleDB
+	 */
 	public static void exchangeViewWithSimpleDb() {
 		AWSSimpleDbUtil.initSimpleDbInstance();
 		hisView = AWSSimpleDbUtil.awsSimpleDBGet();
@@ -24,6 +27,9 @@ public class ViewUtils {
 		exchangeViewWithSimpleDb();
 	}*/
 	
+	/*
+	 * Exchange the views between local and foreign view
+	 */
 	private static void updateLocalView() {
 		for (Entry<String, ServerStatus> serverEntry : hisView.entrySet()) {
 			String serverID = serverEntry.getKey();
@@ -42,6 +48,14 @@ public class ViewUtils {
 		hisView.clear();
 	}
 	
-	//exchange with server
+	/*
+	 * Init for exchanging view with server.
+	 * @param foreign server's view is passed  
+	 */
+	public static void exchangeViewWithServer(HashMap<String, ServerStatus> foreignServerView) {
+		hisView = foreignServerView; 
+		//Merge View here
+		updateLocalView();
+	}
 	
 }

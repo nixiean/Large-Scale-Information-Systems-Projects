@@ -80,7 +80,7 @@ public class SMRPCServer implements Runnable {
 			return SESSION_WRITE_SUCCESS;	
 	}
 	
-	//Deserialize
+	//Get all the server triplets and exchange the views
 	private static String getPayloadForExchangeView() {
 		return "";
 	}
