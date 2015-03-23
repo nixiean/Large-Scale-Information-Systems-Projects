@@ -56,14 +56,41 @@
 	<%
 		String msg = (String) request.getAttribute("cookieMsg");
 		if (msg != null) {
-			out.println(msg);
+			out.println("Cookie Details:");
+			String[] sessionDetails = msg.split("_");
+	%>
+	<table style="width: 40%; border: 2px solid black;">
+		<tr bgcolor="#C9C9C9">
+			<td><b>SessionID</b></td>
+			<td><b>Version Number</b></td>
+			<td><b>Location Metadata</b></td>
+		</tr>
+		<tr>
+			<td><b>
+					<%
+						out.print(sessionDetails[0]);
+					%>
+			</b></td>
+			<td><b>
+					<%
+						out.print(sessionDetails[1]);
+					%>
+			</b></td>
+			<td><b>
+					<%
+						out.print(sessionDetails[2]);
+					%>
+			</b></td>
+		</tr>
+	</table>
+	<%
 		}
 	%>
 	</br>
 	</br>
 	<%
 		if (timeStamp != null) {
-			out.println("Cookie expires at:" + timeStamp);
+			out.println("Cookie expires at: " + timeStamp);
 		}
 	%>
 	</br>
@@ -71,21 +98,24 @@
 		Click <a href="./print">here</a> to print all active sessions
 	</h5>
 
-	<table style="width: 40% ; border: 2px solid black">
-	<tr bgcolor = <% out.print("#C9C9C9"); %>>
-	<td><b>ServerID</b></td>
-	<td><b>Status</b></td>
-	<td><b>Last Updated on</b></td>
-	</tr>
+	<%
+		out.println("Server details in local view:");
+	%>
+	<table style="width: 40%; border: 2px solid black">
+		<tr bgcolor="#C9C9C9">
+			<td><b>ServerID</b></td>
+			<td><b>Status</b></td>
+			<td><b>Last Updated on</b></td>
+		</tr>
 		<%
 			for (String key : EnterServlet.myView.keySet()) {
 				String statusColor;
-				if (EnterServlet.myView.get(key).getStatus() == ServerStatusCode.UP) 
-					statusColor = "#A5DE43";
-				else 
-				    statusColor = "#ED4A4A";
+				if (EnterServlet.myView.get(key).getStatus() == ServerStatusCode.UP)
+					statusColor = "#A5DE43"; 
+				else
+					statusColor = "#ED4A4A";
 		%>
-		<tr bgcolor = <% out.print(statusColor); %>>
+		<tr bgcolor=<%out.print(statusColor);%>>
 			<td>
 				<%
 					out.print(key);
