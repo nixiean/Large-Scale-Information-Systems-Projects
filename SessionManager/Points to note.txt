@@ -1,0 +1,39 @@
+******************
+	SimpleDB
+******************
+
+
+
+
+******************
+	RPC call
+******************
+- Session Write: Return successful 
+
+
+
+******************
+	Delimiters
+******************
+- RPC 3 main tokens - #
+
+sessionData is always underscore separated
+
+Payloads for:  
+- Session read
+	Client to Server
+		<number,srvrID> //sessionID
+	Server to Client
+		<versionNumber,sessionData>
+
+- Session write
+	Client to Server
+		<sessionID,versionNumber,sessionData,timestamp>
+	Server to Client
+		<successMessage>
+
+- Exchange views
+	Client to Server
+		<srvrID1,status,ts1;srvrID2,status,ts2>
+	Server to Client 
+		<successMessage>
