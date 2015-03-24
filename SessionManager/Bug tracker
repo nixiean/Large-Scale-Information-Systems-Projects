@@ -8,3 +8,5 @@ Amazon SimpleDB - Status is not being written sometimes.
 Dispatcher exception (Alok: Fixed)
 
 Net Bind exception 
+
+Values disappearing from  session table.
