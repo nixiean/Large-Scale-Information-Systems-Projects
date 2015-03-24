@@ -31,7 +31,7 @@ public class EnterServlet extends HttpServlet {
 	public static Hashtable<String, String> sessionTable = new Hashtable<String, String>();
 
 	public static final int COOKIE_MAX_AGE = 3; // 3 minutes
-	private static final long SESSION_CLEANER_INTERVAL = 1*60*1000; // 5 minutes
+	private static final long SESSION_CLEANER_INTERVAL = 5*60*1000; // 5 minutes
 	private static final long EXCHANGE_VIEW_INTERVAL = 1*60*1000; // 1 minute
 	public static final int RESILIENCY = 2;
 
