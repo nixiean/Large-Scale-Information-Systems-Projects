@@ -2,7 +2,8 @@ Known Bugs:
 
 Amazon SimpleDB - Status is not being written sometimes. 
 				  Sometimes session Number is set as serverID 
+				  (Alok: Fixed it not seeing it from a long time)
 				  
-Dispatcher exception
+Dispatcher exception (Alok: Fixed)
 
-Net Bind exception
+Net Bind exception 
