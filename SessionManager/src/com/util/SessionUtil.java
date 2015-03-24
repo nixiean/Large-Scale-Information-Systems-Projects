@@ -16,6 +16,7 @@ import java.util.UUID;
 import java.util.Map.Entry;
 
 import com.rpc.SMRPCClient;
+import com.rpc.SMRPCServer;
 import com.servlet.EnterServlet;
 import com.sun.xml.internal.bind.v2.TODO;
 import com.view.ServerStatus;
@@ -124,7 +125,8 @@ public class SessionUtil {
 			if (backupServer != null) {
 				String receivedData = rpcClient.sendForSessionRead(sessionId,
 						backupServer);
-				if (receivedData != SMRPCClient.FAILURE && receivedData.length()!=0) {
+				if (receivedData != SMRPCClient.FAILURE  && receivedData != SMRPCServer.NOT_FOUND)   {
+					
 					return receivedData.split(",")[1];
 				}
 			}

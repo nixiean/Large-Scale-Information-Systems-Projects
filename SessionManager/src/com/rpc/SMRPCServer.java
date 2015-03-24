@@ -17,7 +17,7 @@ import com.view.ViewUtils;
 public class SMRPCServer implements Runnable {
 	private static final int portPROJ1BRPC = 5300;
 	private static final int packetSize = 512;
-	private static final String NOT_FOUND = "not found";
+	public static final String NOT_FOUND = "not found";
 	private static final String SESSION_WRITE_SUCCESS = "session written successfully";
 	private static final String EXCHANGE_VIEW_SUCCESS = "views exchanged succesfully";
 
