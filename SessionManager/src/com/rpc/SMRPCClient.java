@@ -141,7 +141,7 @@ public class SMRPCClient {
 			InetAddress address = InetAddress.getByName(destinationAddress);
 
 			int callId = new Random().nextInt();
-			int operationCode = 2;
+			int operationCode = 3;
 			String payLoad = buildPayLoadForExchangeView(myView);
 			RPCRequest rpcRequest = new RPCRequest(callId, operationCode,
 					payLoad);
