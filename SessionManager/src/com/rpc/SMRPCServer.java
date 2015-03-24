@@ -136,7 +136,7 @@ public class SMRPCServer implements Runnable {
 				String serverID = serverDetails[0];
 				ServerStatus status = new ServerStatus(
 						ServerStatusCode.valueOf(serverDetails[1]));
-				status.setTime(Long.parseLong(serverDetails[2]));
+				status.setTime(serverDetails[2]);
 				hisView.put(serverID, status);
 			}
 			ViewUtils.updateLocalView(hisView);

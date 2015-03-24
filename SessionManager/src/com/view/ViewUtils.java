@@ -1,5 +1,6 @@
 package com.view;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -38,7 +39,8 @@ public class ViewUtils {
 				myView.put(serverID, serverStatus);
 			} else {
 				// Update the server status according to the latest timestamp
-				if (serverStatus.getTime() > myView.get(serverID).getTime()) {
+				//add greater time logic here
+				if (Timestamp.valueOf(serverStatus.getTime()).after(Timestamp.valueOf(myView.get(serverID).getTime()))) {
 					myView.put(serverID, serverStatus);
 				}
 			}
@@ -68,7 +70,7 @@ public class ViewUtils {
 				String serverID = serverDetails[0];
 				ServerStatus status = new ServerStatus(
 						ServerStatusCode.valueOf(serverDetails[1]));
-				status.setTime(Long.parseLong(serverDetails[2]));
+				status.setTime(serverDetails[2]);
 				hisView.put(serverID, status);
 			}
 			

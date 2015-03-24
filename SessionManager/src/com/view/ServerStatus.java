@@ -1,13 +1,16 @@
 package com.view;
 
+import java.sql.Timestamp;
+import java.util.Date;
+
 public class ServerStatus {
 
 	private ServerStatusCode statusCode;
-	private long time;
+	private String time;
 
 	public ServerStatus(ServerStatusCode status) {
 		this.statusCode = status;
-		this.time = System.currentTimeMillis();
+		this.time = new Timestamp((new Date()).getTime()).toString();;
 	}
 
 	public ServerStatusCode getStatus() {
@@ -18,11 +21,11 @@ public class ServerStatus {
 		this.statusCode = status;
 	}
 
-	public long getTime() {
+	public String getTime() {
 		return time;
 	}
 
-	public void setTime(long time) {
+	public void setTime(String time) {
 		this.time = time;
 	}
 	
@@ -33,8 +36,6 @@ public class ServerStatus {
 		return "ServerStatus [statusCode=" + statusCode + ", time=" + time
 				+ "]";
 	}
-
-
 
 	public enum ServerStatusCode {
 		UP,

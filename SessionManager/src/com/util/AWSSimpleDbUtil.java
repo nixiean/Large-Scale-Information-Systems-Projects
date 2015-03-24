@@ -61,7 +61,7 @@ public class AWSSimpleDbUtil {
 			String serverStatus[] = item.getAttributes().get(0).getValue()
 					.split(awsSimpleDBDelimiter);
 			ServerStatus status = new ServerStatus(ServerStatusCode.valueOf(serverStatus[0]));
-			status.setTime(Long.parseLong(serverStatus[1]));
+			status.setTime(serverStatus[1]);
 			hisView.put(item.getName(), status);
 		}
 		return hisView;

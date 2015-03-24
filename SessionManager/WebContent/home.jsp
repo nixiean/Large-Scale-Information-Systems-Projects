@@ -1,4 +1,5 @@
 <%@page import="com.view.ServerStatus.ServerStatusCode"%>
+<%@page import="com.view.ServerStatus"%>
 <%@page import="com.servlet.EnterServlet"%>
 <%@page import="com.util.SessionUtil"%>
 <%@page import="java.util.Hashtable"%>
@@ -109,28 +110,15 @@
 		<%
 			for (String key : EnterServlet.myView.keySet()) {
 				String statusColor;
-				if (EnterServlet.myView.get(key).getStatus() == ServerStatusCode.UP)
+				ServerStatus viewSrvStatusObj = EnterServlet.myView.get(key);
+				if (viewSrvStatusObj.getStatus() == ServerStatusCode.UP)
 					statusColor = "#A5DE43"; 
 				else
 					statusColor = "#ED4A4A";
 		%>
-		<tr bgcolor=<%out.print(statusColor);%>>
-			<td>
-				<%
-					out.print(key);
-				%>
-			</td>
-			<td>
-				<%
-					out.print(EnterServlet.myView.get(key).getStatus());
-				%>
-			</td>
-			<td>
-				<%
-					out.print(EnterServlet.myView.get(key).getTime());
-				%>
-			</td>
-		</tr>
+					<tr bgcolor= <%=statusColor%>>
+						<td><%= key %></td><td><%= viewSrvStatusObj.getStatus() %></td><td><%= viewSrvStatusObj.getTime() %></td>
+					</tr>
 		<%
 			}
 		%>
