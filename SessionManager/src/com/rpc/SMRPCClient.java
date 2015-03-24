@@ -49,7 +49,7 @@ public class SMRPCClient {
 			String payLoad = sessionId;
 			RPCRequest rpcRequest = new RPCRequest(callId, operationCode,
 					payLoad);
-
+			System.out.println("Sending RPC Session Read to "+ destinationAddress + "with payLoad :" + RPCMsgUtil.serializeRPCRequest(rpcRequest));
 			buf = RPCMsgUtil.serializeRPCRequest(rpcRequest).getBytes();
 			DatagramPacket packet = new DatagramPacket(buf, buf.length,
 					address, portPROJ1BRPC);
@@ -99,6 +99,7 @@ public class SMRPCClient {
 			RPCRequest rpcRequest = new RPCRequest(callId, operationCode,
 					payLoad);
 
+			System.out.println("Sending RPC Session Write to "+ destinationAddress + "with payLoad :" + RPCMsgUtil.serializeRPCRequest(rpcRequest));
 			buf = RPCMsgUtil.serializeRPCRequest(rpcRequest).getBytes();
 			DatagramPacket packet = new DatagramPacket(buf, buf.length,
 					address, portPROJ1BRPC);
@@ -146,6 +147,8 @@ public class SMRPCClient {
 			RPCRequest rpcRequest = new RPCRequest(callId, operationCode,
 					payLoad);
 
+			System.out.println("Sending RPC Exchange View to "+ destinationAddress + "with payLoad :" + RPCMsgUtil.serializeRPCRequest(rpcRequest));
+			
 			buf = RPCMsgUtil.serializeRPCRequest(rpcRequest).getBytes();
 			DatagramPacket packet = new DatagramPacket(buf, buf.length,
 					address, portPROJ1BRPC);

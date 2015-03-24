@@ -29,9 +29,11 @@ public class ViewExchangerThread implements Runnable {
 			String gossipPartnerIp = pickGossipPartner();
 			if(gossipPartnerIp.equals(localsvrId)) {
 				//Exchange with SimpleDB
+				System.out.println(localsvrId + " is initiating gossip with Simple DB at: "+ new Date().toString());
 				ViewUtils.exchangeViewWithSimpleDb();
 			} else {
 				//Make RPC and exchange with server
+				System.out.println(localsvrId + " is initiating gossip with "+ gossipPartnerIp +" at: "+ new Date().toString());
 				ViewUtils.exchangeViewWithServer(gossipPartnerIp);
 			}
 			

@@ -46,18 +46,21 @@ public class SMRPCServer implements Runnable {
 					RPCResponse rpcResponse = null;
 					switch (operationCode) {
 					case 1:
+						System.out.println("Received RPC Session Read:" + rpcRequest.toString());
 						// rpcRequest will contain sessionID in payload
 						payLoad = getPayloadForSessionRead(rpcRequest.getPayload());
 						rpcResponse = new RPCResponse(rpcRequest.getCallId(),
 								payLoad);
 						break;
 					case 2:
+						System.out.println("Received RPC Session Write:" + rpcRequest.toString());
 						// rpcRequest will contain session Data to be written
 						payLoad = getPayloadForSessionWrite(rpcRequest.getPayload());
 						rpcResponse = new RPCResponse(rpcRequest.getCallId(),
 								payLoad);
 						break;
 					case 3:
+						System.out.println("Received RPC Exchange View:" + rpcRequest.toString());
 						// rpcRequest will contain foreign server's view to be
 						// exchanged
 						payLoad = getPayloadForExchangeView(rpcRequest.getPayload());
