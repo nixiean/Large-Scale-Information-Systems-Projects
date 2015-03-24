@@ -63,7 +63,7 @@ public class ViewUtils {
 		//Get the server details from the foreign view
 		if (receivedMessage != SMRPCClient.FAILURE) {
 			HashMap<String, ServerStatus> hisView = new HashMap<String, ServerStatus>();
-			String []serverTriplets = receivedMessage.split("#")[2].split(";");
+			String []serverTriplets = receivedMessage.split("#")[1].split(";");
 			
 			for(String serverTriplet : serverTriplets) {
 				String serverDetails[] = serverTriplet.split(",");
