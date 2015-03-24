@@ -32,7 +32,7 @@ import com.view.ServerStatus.ServerStatusCode;
 /**
  * Servlet implementation class EnterServlet
  */
-@WebServlet("/EnterServlet")
+@WebServlet(value="/EnterServlet", loadOnStartup=1)
 public class EnterServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	// Local view with server details
@@ -60,17 +60,20 @@ public class EnterServlet extends HttpServlet {
 				SESSION_CLEANER_INTERVAL, TimeUnit.MINUTES);
 
 		// TODO Remove this hardcode
-		myView.put("192.168.43.232", new ServerStatus(ServerStatusCode.UP));
+		/*myView.put("192.168.43.232", new ServerStatus(ServerStatusCode.UP));
 		myView.put("192.168.43.181", new ServerStatus(ServerStatusCode.UP));
 		myView.put("192.168.43.205", new ServerStatus(ServerStatusCode.UP));
-
+*/
+		myView.put("128.84.216.62", new ServerStatus(ServerStatusCode.UP));
+		myView.put("128.84.216.61", new ServerStatus(ServerStatusCode.UP));
 		// Spawn the exchange view thread
 		Runnable viewExchangerThread = new ViewExchangerThread();
 		executor.scheduleAtFixedRate(viewExchangerThread, 0,
 				EXCHANGE_VIEW_INTERVAL, TimeUnit.MINUTES);
 
 		// Start daemon RPC server thread
-		executor.execute(new SMRPCServer());
+		//executor.execute(new SMRPCServer());
+		(new Thread(new SMRPCServer())).start();
 	}
 
 	/**
