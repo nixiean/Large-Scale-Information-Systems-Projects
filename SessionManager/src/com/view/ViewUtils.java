@@ -84,6 +84,7 @@ public class ViewUtils {
 	 */
 	public static void updateSystemStatus(String serverId, ServerStatusCode statusCode) {
 		ServerStatus status = new ServerStatus(statusCode);
+		System.out.println("BUG3:"+serverId);
 		myView.put(serverId,status);
 		
 	}
