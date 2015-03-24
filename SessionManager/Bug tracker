@@ -3,6 +3,7 @@ Known Bugs:
 Amazon SimpleDB - Status is not being written sometimes. 
 				  Sometimes session Number is set as serverID 
 				  (Alok: Fixed it not seeing it from a long time)
+				  (Nikhil: Not fixed yet, saw it again) 
 				  
 Dispatcher exception (Alok: Fixed)
 
