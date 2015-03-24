@@ -97,7 +97,7 @@ public class SMRPCServer implements Runnable {
 	 * @return Success message
 	 */
 	private static String getPayloadForSessionWrite(String incomingPayload) {
-		String[] tokens = incomingPayload.split(",");
+		String[] tokens = incomingPayload.split(";");
 		String sessionId = tokens[0];
 		// String versionNumber = tokens[1];
 		String data = tokens[2];
