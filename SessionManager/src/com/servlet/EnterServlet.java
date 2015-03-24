@@ -98,34 +98,27 @@ public class EnterServlet extends HttpServlet {
 		boolean isReplace = null != param ? param.equals("Replace") : false;
 		boolean isLogout = null != param ? param.equals("Logout") : false;
 
-		if (isRefresh) {
-			handleReturningUser(request, response, myCookie, null);
-		} else if (isReplace) {
+
+		if (isReplace) {
 			String msgParam = request.getParameter("messagebox");
-			// TODO Check if it should be null or Hello User
 			String welcomeMessage = (null != msgParam) ? msgParam
 					: "Hello User";
 			handleReturningUser(request, response, myCookie, welcomeMessage);
 		} else if (isLogout) {
 			handleLogout(request, response, myCookie);
 		} else {
-
-			/*
-			 * // Get the cookie from the user request Cookie myCookie =
-			 * getExistingCookie(request); if (myCookie == null) { // New
-			 * request handleNewUser(request, response); } else { //TODO WHen
-			 * will this case arise and what to do? // Returning user
-			 * handleReturningUser(request, response, myCookie, null);
-			 * 
-			 * }
-			 */
+			//For refresh and browser reload
+			handleReturningUser(request, response, myCookie, null);
 		}
 	}
 
 	private void handleReturningUser(HttpServletRequest request,
 			HttpServletResponse response, Cookie myCookie, String welcomeMessage)
 			throws ServletException, IOException {
-
+		if (myCookie == null) {
+			// New request
+			handleNewUser(request, response);
+		}
 		//TODO Can we use cookieValue directly without checking for name?
 		String sessionId = SessionUtil.getSessionId(myCookie.getValue());
 		String sessionData = null;
