@@ -13,13 +13,13 @@ import com.view.ViewUtils;
 public class ViewExchangerThread implements Runnable {
 	@Override
 	public void run() {
-		String gossipPartnerIp = pickGossipPartner();
+
 		
-		String localsvrId = SessionUtil.getIpAddress();
-		
+		String localsvrId = SessionUtil.getIpAddress();		
 		//Update its own tuple
 		EnterServlet.myView.put(localsvrId, new ServerStatus(ServerStatusCode.UP));
 		
+		String gossipPartnerIp = pickGossipPartner();
 		if(gossipPartnerIp.equals(localsvrId)) {
 			//Exchange with SimpleDB
 			ViewUtils.exchangeViewWithSimpleDb();

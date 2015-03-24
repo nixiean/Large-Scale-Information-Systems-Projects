@@ -60,12 +60,9 @@ public class EnterServlet extends HttpServlet {
 				SESSION_CLEANER_INTERVAL, TimeUnit.MINUTES);
 
 		// TODO Remove this hardcode
-		/*myView.put("192.168.43.232", new ServerStatus(ServerStatusCode.UP));
-		myView.put("192.168.43.181", new ServerStatus(ServerStatusCode.UP));
-		myView.put("192.168.43.205", new ServerStatus(ServerStatusCode.UP));
-*/
-		myView.put("128.84.216.62", new ServerStatus(ServerStatusCode.UP));
-		myView.put("128.84.216.61", new ServerStatus(ServerStatusCode.UP));
+		//myView.put("128.84.216.62", new ServerStatus(ServerStatusCode.UP));
+		//myView.put("128.84.216.61", new ServerStatus(ServerStatusCode.UP));
+		
 		// Spawn the exchange view thread
 		Runnable viewExchangerThread = new ViewExchangerThread();
 		executor.scheduleAtFixedRate(viewExchangerThread, 0,
