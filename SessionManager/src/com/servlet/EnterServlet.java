@@ -64,28 +64,32 @@ public class EnterServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		
-		Cookie myCookie = getExistingCookie(request);
-		if (myCookie == null) {
-			// New request
-			handleNewUser(request, response);
-		}
-
 		String param = request.getParameter("submit");
 		boolean isRefresh = null != param ? param.equals("Refresh") : false;
 		boolean isReplace = null != param ? param.equals("Replace") : false;
 		boolean isLogout = null != param ? param.equals("Logout") : false;
-
+		boolean noParamSet = false || isReplace || isLogout;
+		
+		Cookie myCookie = getExistingCookie(request);
+		if (myCookie == null && !noParamSet) {
+			// New request
+			handleNewUser(request, response, "Hello User");
+			return;
+		}
 
 		if (isReplace) {
 			String msgParam = request.getParameter("messagebox");
 			String welcomeMessage = (null != msgParam) ? msgParam
 					: "Hello User";
 			handleReturningUser(request, response, myCookie, welcomeMessage);
+			return;
 		} else if (isLogout) {
 			handleLogout(request, response, myCookie);
+			return;
 		} else {
 			//For refresh and browser reload
 			handleReturningUser(request, response, myCookie, null);
+			return;
 		}
 	}
 
@@ -94,7 +98,8 @@ public class EnterServlet extends HttpServlet {
 			throws ServletException, IOException {
 		if (myCookie == null) {
 			// New request
-			handleNewUser(request, response);
+			handleNewUser(request, response, welcomeMessage);
+			return;
 		}
 		//TODO Can we use cookieValue directly without checking for name?
 		String sessionId = SessionUtil.getSessionId(myCookie.getValue());
@@ -164,12 +169,14 @@ public class EnterServlet extends HttpServlet {
 
 		RequestDispatcher dispatcher = request.getRequestDispatcher("home.jsp");
 		dispatcher.forward(request, response);
-		return;
 	}
 
 	private void handleNewUser(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		String uniqueCookie = SessionUtil.getUniqueCookie();
+			HttpServletResponse response, String welcomeMsg) throws ServletException, IOException {
+		//String msgBoxStr = request.getParameter("messagebox");
+		//String welcomeMsg = (null != msgBoxStr)  ? msgBoxStr : "Hello User" ;
+
+		String uniqueCookie = SessionUtil.getUniqueCookie(welcomeMsg);
 		Cookie newCookie = new Cookie(COOKIE_NAME, uniqueCookie);
 		String sessionId = SessionUtil.getSessionId(newCookie.getValue());
 		String cookieExpireTs = SessionUtil.getExpiryTimeStamp(COOKIE_MAX_AGE);
@@ -180,15 +187,15 @@ public class EnterServlet extends HttpServlet {
 	private void handleLogout(HttpServletRequest request,
 			HttpServletResponse response, Cookie myCookie)
 			throws ServletException, IOException {
-
-		myCookie.setMaxAge(0);
-		// TODO Check if stale session Data has to be removed or not
-		sessionTable.remove(SessionUtil.getSessionId(myCookie.getValue()));
-		response.addCookie(myCookie);
+		if(myCookie != null) {
+			myCookie.setMaxAge(0);
+			// TODO Check if stale session Data has to be removed or not
+			sessionTable.remove(SessionUtil.getSessionId(myCookie.getValue()));
+			response.addCookie(myCookie);
+		}
 		
 		RequestDispatcher dispatcher = request.getRequestDispatcher("home.jsp");
 		dispatcher.forward(request, response);
-		return;
 	}
 
 	private Cookie getExistingCookie(HttpServletRequest request) {

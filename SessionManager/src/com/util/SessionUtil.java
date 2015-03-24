@@ -27,7 +27,7 @@ public class SessionUtil {
 	private static String localIpAddress = null;
 
 	// make it synchronized so the unique id will be thread safe
-	public static synchronized String getUniqueCookie() {
+	public static synchronized String getUniqueCookie(String welcomeMsg) {
 		int sessionNum = ++sessionCounter;
 		String localSvrId = getIpAddress();
 		String sessionId = sessionNum + "," + localSvrId;
@@ -36,7 +36,7 @@ public class SessionUtil {
 		long versionNumber = 1L;
 		String cookieExpireTs = getExpiryTimeStamp(EnterServlet.COOKIE_MAX_AGE);
 
-		String sessionData = "Hello User" + "_" + versionNumber + "_"
+		String sessionData = welcomeMsg + "_" + versionNumber + "_"
 				+ cookieExpireTs;
 
 		// Update the local session table.
