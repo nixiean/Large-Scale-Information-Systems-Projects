@@ -51,26 +51,14 @@ public class EnterServlet extends HttpServlet {
 	@Override
 	public void init() throws ServletException {
 		super.init();
-		// Initialize the session cleaner
-		ScheduledExecutorService executor = Executors
-				.newSingleThreadScheduledExecutor();
+		ScheduledExecutorService sessionCleanerScheduledExecutor = Executors.newSingleThreadScheduledExecutor();
 		Runnable sessionCleaner = new SessionCleaner(sessionTable);
-		// spawn the sessionCleaner thread in every 5 mins, as cookies get
-		// timeout by 3 mins
-		executor.scheduleAtFixedRate(sessionCleaner, 0,
-				SESSION_CLEANER_INTERVAL, TimeUnit.MINUTES);
-
-		// TODO Remove this hardcode
-		//myView.put("128.84.216.62", new ServerStatus(ServerStatusCode.UP));
-		//myView.put("128.84.216.61", new ServerStatus(ServerStatusCode.UP));
-		
-		// Spawn the exchange view thread
-		Runnable viewExchangerThread = new ViewExchangerThread();
-		executor.scheduleAtFixedRate(viewExchangerThread, 0,
-				EXCHANGE_VIEW_INTERVAL, TimeUnit.MINUTES);
-
-		// Start daemon RPC server thread
-		//executor.execute(new SMRPCServer());
+		// spawn the sessionCleaner thread in every 5 mins
+		sessionCleanerScheduledExecutor.scheduleAtFixedRate(sessionCleaner, 0,	SESSION_CLEANER_INTERVAL, TimeUnit.MINUTES);
+		// Spawn the exchange view thread in every 1 min interval
+		ScheduledExecutorService viewExchangeScheduledexecutor = Executors.newSingleThreadScheduledExecutor();
+		viewExchangeScheduledexecutor.scheduleAtFixedRate(new ViewExchangerThread(), 0,	EXCHANGE_VIEW_INTERVAL, TimeUnit.MINUTES);
+		//Start daemon RPC server thread indefinitely
 		(new Thread(new SMRPCServer())).start();
 	}
 
