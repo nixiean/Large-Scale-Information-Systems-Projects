@@ -76,5 +76,14 @@ public class ViewUtils {
 			updateLocalView(hisView);
 		}
 	}
+	
+	/*
+	 * Update the status of the server in local view
+	 */
+	public static void updateSystemStatus(String serverId, ServerStatusCode statusCode) {
+		ServerStatus status = new ServerStatus(statusCode);
+		myView.put(serverId,status);
+		
+	}
 
 }

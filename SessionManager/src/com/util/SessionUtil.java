@@ -88,20 +88,22 @@ public class SessionUtil {
 				.append(",");
 		Random rand = new Random();
 		while (numRandomServers-- > 0) {
-			int index = rand.nextInt(activeServerId.size());
-			String destinationAddress = activeServerId.get(index);
-			if (rpcClient.sendForSessionWrite(sessionId,
-					String.valueOf(versionNumber), sessionData, cookieExpireTs,
-					destinationAddress) != SMRPCClient.FAILURE) {
-				retRandomServers.append(destinationAddress).append(",");
+			if (!activeServerId.isEmpty()) {
+				int index = rand.nextInt(activeServerId.size());
+				String destinationAddress = activeServerId.get(index);
+				if (rpcClient.sendForSessionWrite(sessionId,
+						String.valueOf(versionNumber), sessionData,
+						cookieExpireTs, destinationAddress) != SMRPCClient.FAILURE) {
+					retRandomServers.append(destinationAddress).append(",");
+				} else {
+					retRandomServers.append("NULL").append(",");
+				}
+				// Remove the server from list once the RPC call is made
+				activeServerId.remove(index);
 			} else {
 				retRandomServers.append("NULL").append(",");
 			}
-			// Remove the server from list once the RPC call is made
-			activeServerId.remove(index);
 		}
-
-		
 		return retRandomServers.toString();
 	}
 
@@ -128,7 +130,8 @@ public class SessionUtil {
 			}
 
 		}
-		//If the call to servers failed or none of the servers contain the sessionId
+		// If the call to servers failed or none of the servers contain the
+		// sessionId
 		return null;
 	}
 

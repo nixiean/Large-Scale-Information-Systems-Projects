@@ -4,10 +4,12 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.HashMap;
-import java.util.Random;
 import java.util.Map.Entry;
+import java.util.Random;
 
 import com.view.ServerStatus;
+import com.view.ServerStatus.ServerStatusCode;
+import com.view.ViewUtils;
 
 public class SMRPCClient {
 	private static final int portPROJ1BRPC = 5300;
@@ -68,6 +70,7 @@ public class SMRPCClient {
 			return received;
 		} catch (Exception e) {
 			if(socket!=null) socket.close();
+			ViewUtils.updateSystemStatus(destinationAddress,ServerStatusCode.DOWN);
 			e.printStackTrace();
 			return FAILURE;
 		}
@@ -115,6 +118,7 @@ public class SMRPCClient {
 			return received;
 		} catch (Exception e) {
 			if(socket!=null) socket.close();
+			ViewUtils.updateSystemStatus(destinationAddress,ServerStatusCode.DOWN);
 			e.printStackTrace();
 			return FAILURE;
 		}
@@ -161,6 +165,7 @@ public class SMRPCClient {
 			return received;
 		} catch (Exception e) {
 			if(socket!=null) socket.close();
+			ViewUtils.updateSystemStatus(destinationAddress,ServerStatusCode.DOWN);
 			e.printStackTrace();
 			return FAILURE;
 		}
