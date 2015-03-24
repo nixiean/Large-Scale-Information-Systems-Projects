@@ -116,19 +116,20 @@ public class SessionUtil {
 	public static String getSessionDataFromBackupServers(String sessionId,
 			String locationMetadata) {
 		String[] backupServers = locationMetadata.split(",");
-
+		String localSvrId = getIpAddress();
 		// Make the RPC calls by iterating through backup server one by one
 		SMRPCClient rpcClient = SMRPCClient.getInstance();
 
 		for (String backupServer : backupServers) {
 
-			if (backupServer != null && !backupServer.equals("NULL")) {
+			if (backupServer != null && !backupServer.equals("NULL")
+					&& !backupServer.equals(localSvrId)) {
 				String receivedData = rpcClient.sendForSessionRead(sessionId,
 						backupServer);
 				System.out.println(receivedData);
 				if (!receivedData.equals(SMRPCClient.FAILURE)) {
 					receivedData = receivedData.split("#")[1];
-					if (!receivedData.equals(SMRPCServer.NOT_FOUND) ) {
+					if (!receivedData.equals(SMRPCServer.NOT_FOUND)) {
 						return receivedData.split(",")[1];
 					}
 				}
