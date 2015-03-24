@@ -94,8 +94,8 @@ public class SMRPCClient {
 
 			int callId = new Random().nextInt();
 			int operationCode = 2;
-			String payLoad = sessionId + "," + versionNumber + ","
-					+ sessionData + "," + timeStamp;
+			String payLoad = sessionId + ";" + versionNumber + ";"
+					+ sessionData + ";" + timeStamp;
 			RPCRequest rpcRequest = new RPCRequest(callId, operationCode,
 					payLoad);
 
