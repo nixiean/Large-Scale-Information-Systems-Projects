@@ -125,9 +125,10 @@ public class SessionUtil {
 			if (backupServer != null) {
 				String receivedData = rpcClient.sendForSessionRead(sessionId,
 						backupServer);
-				if (receivedData != SMRPCClient.FAILURE) {
-					receivedData = receivedData.split("#")[2];
-					if (receivedData != SMRPCServer.NOT_FOUND) {
+				System.out.println(receivedData);
+				if (!receivedData.equals(SMRPCClient.FAILURE)) {
+					receivedData = receivedData.split("#")[1];
+					if (!receivedData.equals(SMRPCServer.NOT_FOUND) ) {
 						return receivedData.split(",")[1];
 					}
 				}

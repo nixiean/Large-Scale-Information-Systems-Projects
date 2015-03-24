@@ -148,8 +148,11 @@ public class EnterServlet extends HttpServlet {
 					cookieExpireTs);
 
 		} else {
-
-			// TODO Return invalid Login if this check fails
+			//send error page and delete cookie
+			myCookie.setMaxAge(0);
+			response.addCookie(myCookie);
+			RequestDispatcher dispatcher = request.getRequestDispatcher("error.jsp");
+			dispatcher.forward(request, response);
 		}
 
 	}
