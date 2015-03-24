@@ -59,10 +59,6 @@ public class EnterServlet extends HttpServlet {
 		executor.scheduleAtFixedRate(sessionCleaner, 0,
 				SESSION_CLEANER_INTERVAL, TimeUnit.MINUTES);
 
-		// TODO Uncomment this
-		// myView.put(SessionUtil.getIpAddress(), new
-		// ServerStatus(ServerStatusCode.UP));
-
 		// TODO Remove this hardcode
 		myView.put("192.168.43.232", new ServerStatus(ServerStatusCode.UP));
 		myView.put("192.168.43.181", new ServerStatus(ServerStatusCode.UP));
@@ -134,7 +130,7 @@ public class EnterServlet extends HttpServlet {
 		String sessionData = null;
 
 		// Check for local table
-		if (sessionTable.contains(sessionId)) {
+		if (sessionTable.containsKey(sessionId)) {
 			sessionData = sessionTable.get(sessionId);
 		} else {
 			
@@ -153,9 +149,9 @@ public class EnterServlet extends HttpServlet {
 			// version number is initialized to 1
 			long newVersionNumber = Long.parseLong(sessionTokens[1]) + 1;
 
-			if (welcomeMessage != null) {
+			if (welcomeMessage == null) {
 				// Non replace message case
-				welcomeMessage = sessionTokens[1];
+				welcomeMessage = sessionTokens[0];
 			}
 
 			String cookieExpireTs = SessionUtil.getExpiryTimeStamp(COOKIE_MAX_AGE);
