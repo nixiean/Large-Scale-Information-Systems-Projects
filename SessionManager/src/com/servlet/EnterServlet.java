@@ -187,7 +187,7 @@ public class EnterServlet extends HttpServlet {
 
 		RequestDispatcher dispatcher = request.getRequestDispatcher("home.jsp");
 		dispatcher.forward(request, response);
-
+		return;
 	}
 
 	private void handleNewUser(HttpServletRequest request,
@@ -208,8 +208,10 @@ public class EnterServlet extends HttpServlet {
 		// TODO Check if stale session Data has to be removed or not
 		sessionTable.remove(SessionUtil.getSessionId(myCookie.getValue()));
 		response.addCookie(myCookie);
+		
 		RequestDispatcher dispatcher = request.getRequestDispatcher("home.jsp");
 		dispatcher.forward(request, response);
+		return;
 	}
 
 	private Cookie getExistingCookie(HttpServletRequest request) {

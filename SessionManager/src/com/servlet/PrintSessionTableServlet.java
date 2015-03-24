@@ -29,7 +29,6 @@ public class PrintSessionTableServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Hashtable<String, String> sessionHashTable = EnterServlet.sessionTable;
-				;
 		PrintWriter out = response.getWriter();
 		if(sessionHashTable.isEmpty()) {
 			out.print("No active sessions at this time");
