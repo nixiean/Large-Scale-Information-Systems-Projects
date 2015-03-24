@@ -3,14 +3,21 @@
 ******************
 
 
-*********************
-	Threads
-*********************
-- Session Cleaner
+*************************
+	Threads and Timeouts
+*************************
+- Session Cleaner interval
 	5 minutes 
+	
+- Cookie Timeout 
+	3 minutes
+	
+- Gossip interval	
+	1 minute
 
-
-
+- RPCServer 
+	Indefinite
+	
 ******************
 	RPC call
 ******************
