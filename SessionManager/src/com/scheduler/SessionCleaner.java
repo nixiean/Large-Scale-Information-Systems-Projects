@@ -28,7 +28,7 @@ public class SessionCleaner implements Runnable{
 	@Override
 	public void run() {
 		while(true) {
-			System.out.println("Session Cleaner Thread started at:" + new Date().toString());
+			//System.out.println("Session Cleaner Thread started at:" + new Date().toString());
 			List<String> sessionIdsToRemove = new ArrayList<String>();
 			for(String sessionId : sessionTable.keySet()) {
 				String expiryTs = sessionTable.get(sessionId).split("_")[2];
@@ -50,7 +50,7 @@ public class SessionCleaner implements Runnable{
 			}
 			
 			try {
-				System.out.println("Session Cleaner Thread sleeping at:" + new Date().toString());
+				//System.out.println("Session Cleaner Thread sleeping at:" + new Date().toString());
 				Thread.sleep(timeout);
 			} catch(InterruptedException e) {
 				e.printStackTrace();

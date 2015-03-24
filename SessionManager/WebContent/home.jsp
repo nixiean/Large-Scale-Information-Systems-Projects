@@ -111,6 +111,7 @@
 			for (String key : EnterServlet.myView.keySet()) {
 				String statusColor;
 				ServerStatus viewSrvStatusObj = EnterServlet.myView.get(key);
+				
 				if (viewSrvStatusObj.getStatus() == ServerStatusCode.UP)
 					statusColor = "#A5DE43"; 
 				else
