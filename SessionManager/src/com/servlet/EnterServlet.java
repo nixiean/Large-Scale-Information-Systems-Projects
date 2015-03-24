@@ -108,7 +108,7 @@ public class EnterServlet extends HttpServlet {
 			sessionData = sessionTable.get(sessionId);
 		} else {
 			
-			String locationMetadata = SessionUtil.getSessionId(myCookie.getValue());
+			String locationMetadata = myCookie.getValue().split("_")[2];
 			
 			// Do Session Read to check user's validity
 			sessionData = SessionUtil.getSessionDataFromBackupServers(sessionId,locationMetadata);

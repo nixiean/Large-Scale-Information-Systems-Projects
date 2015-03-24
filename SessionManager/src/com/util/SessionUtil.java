@@ -122,7 +122,7 @@ public class SessionUtil {
 
 		for (String backupServer : backupServers) {
 
-			if (backupServer != null) {
+			if (backupServer != null && !backupServer.equals("NULL")) {
 				String receivedData = rpcClient.sendForSessionRead(sessionId,
 						backupServer);
 				System.out.println(receivedData);
