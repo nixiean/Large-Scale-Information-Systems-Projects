@@ -27,6 +27,7 @@ import com.scheduler.SessionCleaner;
 import com.scheduler.ViewExchangerThread;
 import com.util.SessionUtil;
 import com.view.ServerStatus;
+import com.view.ViewUtils;
 import com.view.ServerStatus.ServerStatusCode;
 
 /**
@@ -85,7 +86,7 @@ public class EnterServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-
+		
 		Cookie myCookie = getExistingCookie(request);
 		if (myCookie == null) {
 			// New request
