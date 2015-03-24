@@ -134,7 +134,8 @@ public class SMRPCClient {
 
 			// send request
 			byte[] buf = new byte[packetSize];
-			InetAddress address = InetAddress.getByName(destinationAddress);
+			InetAddress address = InetAddress.getByAddress(destinationAddress
+					.getBytes());
 
 			int callId = new Random().nextInt();
 			int operationCode = 2;
