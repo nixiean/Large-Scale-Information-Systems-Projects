@@ -155,7 +155,7 @@ public class EnterServlet extends HttpServlet {
 			// Update the local session table.
 			EnterServlet.sessionTable.put(sessionId, sessionData);
 
-			// Choose resilience - 1 backups
+			// Choose resilience  backups
 			String serverBackups = SessionUtil.getRandomBackupServers(
 					localSvrId, sessionId, newVersionNumber, sessionData,
 					cookieExpireTs);

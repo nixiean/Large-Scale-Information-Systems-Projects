@@ -1,0 +1,8 @@
+Known Bugs:
+
+Amazon SimpleDB - Status is not being written sometimes. 
+				  Sometimes session Number is set as serverID 
+				  
+Dispatcher exception
+
+Net Bind exception
