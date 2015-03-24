@@ -54,8 +54,9 @@ public class SMRPCClient {
 
 			socket.send(packet);
 
+			byte[] outBuf = new byte[packetSize];
 			// get response
-			packet = new DatagramPacket(buf, buf.length);
+			packet = new DatagramPacket(outBuf, outBuf.length);
 
 			// Waits until timeout
 			socket.receive(packet);
@@ -101,8 +102,9 @@ public class SMRPCClient {
 
 			socket.send(packet);
 
+			byte[] outBuf = new byte[packetSize];
 			// get response
-			packet = new DatagramPacket(buf, buf.length);
+			packet = new DatagramPacket(outBuf, outBuf.length);
 			socket.receive(packet);
 
 			String received = new String(packet.getData(), 0,
@@ -147,8 +149,9 @@ public class SMRPCClient {
 
 			socket.send(packet);
 
+			byte[] outBuf = new byte[packetSize];
 			// get response
-			packet = new DatagramPacket(buf, buf.length);
+			packet = new DatagramPacket(outBuf, outBuf.length);
 			socket.receive(packet);
 
 			String received = new String(packet.getData(), 0,
