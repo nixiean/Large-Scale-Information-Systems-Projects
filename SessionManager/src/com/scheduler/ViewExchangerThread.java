@@ -1,6 +1,7 @@
 package com.scheduler;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map.Entry;
 import java.util.Random;
 
@@ -11,21 +12,35 @@ import com.view.ServerStatus.ServerStatusCode;
 import com.view.ViewUtils;
 
 public class ViewExchangerThread implements Runnable {
+	private long timeout = 60*1000;
+	
+	public ViewExchangerThread(long timeout) {
+		this.timeout = timeout;
+	}
+	
 	@Override
 	public void run() {
-
-		
-		String localsvrId = SessionUtil.getIpAddress();		
-		//Update its own tuple
-		EnterServlet.myView.put(localsvrId, new ServerStatus(ServerStatusCode.UP));
-		
-		String gossipPartnerIp = pickGossipPartner();
-		if(gossipPartnerIp.equals(localsvrId)) {
-			//Exchange with SimpleDB
-			ViewUtils.exchangeViewWithSimpleDb();
-		} else {
-			//Make RPC and exchange with server
-			ViewUtils.exchangeViewWithServer(gossipPartnerIp);
+		while(true) {
+			System.out.println("View Exchange Thread Started at:" + new Date().toString());		
+			String localsvrId = SessionUtil.getIpAddress();		
+			//Update its own tuple
+			EnterServlet.myView.put(localsvrId, new ServerStatus(ServerStatusCode.UP));
+			
+			String gossipPartnerIp = pickGossipPartner();
+			if(gossipPartnerIp.equals(localsvrId)) {
+				//Exchange with SimpleDB
+				ViewUtils.exchangeViewWithSimpleDb();
+			} else {
+				//Make RPC and exchange with server
+				ViewUtils.exchangeViewWithServer(gossipPartnerIp);
+			}
+			
+			try {
+				System.out.println("View Exchange Thread Sleeping at:" + new Date().toString());	
+				Thread.sleep(timeout); 
+			} catch(InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

@@ -31,8 +31,8 @@ public class EnterServlet extends HttpServlet {
 	public static Hashtable<String, String> sessionTable = new Hashtable<String, String>();
 
 	public static final int COOKIE_MAX_AGE = 3; // 3 minutes
-	private static final long SESSION_CLEANER_INTERVAL = 5; // 5 minutes
-	private static final long EXCHANGE_VIEW_INTERVAL = 1; // 1 minute
+	private static final long SESSION_CLEANER_INTERVAL = 1*60*1000; // 5 minutes
+	private static final long EXCHANGE_VIEW_INTERVAL = 1*60*1000; // 1 minute
 	public static final int RESILIENCY = 2;
 
 	private static final String COOKIE_NAME = "CS5300PROJ1SESSION";
@@ -40,13 +40,11 @@ public class EnterServlet extends HttpServlet {
 	@Override
 	public void init() throws ServletException {
 		super.init();
-		ScheduledExecutorService sessionCleanerScheduledExecutor = Executors.newSingleThreadScheduledExecutor();
-		Runnable sessionCleaner = new SessionCleaner(sessionTable);
-		// spawn the sessionCleaner thread in every 5 mins
-		sessionCleanerScheduledExecutor.scheduleAtFixedRate(sessionCleaner, 0,	SESSION_CLEANER_INTERVAL, TimeUnit.MINUTES);
-		// Spawn the exchange view thread in every 1 min interval
-		ScheduledExecutorService viewExchangeScheduledexecutor = Executors.newSingleThreadScheduledExecutor();
-		viewExchangeScheduledexecutor.scheduleAtFixedRate(new ViewExchangerThread(), 0,	EXCHANGE_VIEW_INTERVAL, TimeUnit.MINUTES);
+		Runnable sessionCleaner = new SessionCleaner(sessionTable, SESSION_CLEANER_INTERVAL);
+		//spawn the sessionCleaner thread in every 5 mins
+		(new Thread(sessionCleaner)).start();
+		//spawn the sessionCleaner thread in every 5 mins
+		(new Thread(new ViewExchangerThread(EXCHANGE_VIEW_INTERVAL))).start();
 		//Start daemon RPC server thread indefinitely
 		(new Thread(new SMRPCServer())).start();
 	}

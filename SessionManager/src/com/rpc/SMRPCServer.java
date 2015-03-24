@@ -5,6 +5,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -22,56 +23,60 @@ public class SMRPCServer implements Runnable {
 
 	@Override
 	public void run() {
-		try {
-			DatagramSocket rpcSocket = new DatagramSocket(portPROJ1BRPC);
-			while (true) {
-				byte[] inBuf = new byte[packetSize];
-				DatagramPacket recvPkt = new DatagramPacket(inBuf, inBuf.length);
-				// Waits till the packet is received
-				rpcSocket.receive(recvPkt);
-				InetAddress returnAddr = recvPkt.getAddress();
-				int returnPort = recvPkt.getPort();
-				// here inBuf contains the callID and operationCode
-				String receivedRPCPktStr = new String(recvPkt.getData(), 0,
-						recvPkt.getLength());
-				RPCRequest rpcRequest = RPCMsgUtil
-						.deserializeRPCRequest(receivedRPCPktStr);
-				int operationCode = rpcRequest.getOpCode();
-				byte[] outBuf = null;
-				String payLoad = "";
-				RPCResponse rpcResponse = null;
-				switch (operationCode) {
-				case 1:
-					// rpcRequest will contain sessionID in payload
-					payLoad = getPayloadForSessionRead(rpcRequest.getPayload());
-					rpcResponse = new RPCResponse(rpcRequest.getCallId(),
-							payLoad);
-					break;
-				case 2:
-					// rpcRequest will contain session Data to be written
-					payLoad = getPayloadForSessionWrite(rpcRequest.getPayload());
-					rpcResponse = new RPCResponse(rpcRequest.getCallId(),
-							payLoad);
-					break;
-				case 3:
-					// rpcRequest will contain foreign server's view to be
-					// exchanged
-					payLoad = getPayloadForExchangeView(rpcRequest.getPayload());
-					rpcResponse = new RPCResponse(rpcRequest.getCallId(),
-							payLoad);
-					break;
+		//run indefinitely
+		while(true) {
+			System.out.println("RPC Server Started at:" + new Date().toString());
+			try {
+				DatagramSocket rpcSocket = new DatagramSocket(portPROJ1BRPC);
+				while (true) {
+					byte[] inBuf = new byte[packetSize];
+					DatagramPacket recvPkt = new DatagramPacket(inBuf, inBuf.length);
+					// Waits till the packet is received
+					rpcSocket.receive(recvPkt);
+					InetAddress returnAddr = recvPkt.getAddress();
+					int returnPort = recvPkt.getPort();
+					// here inBuf contains the callID and operationCode
+					String receivedRPCPktStr = new String(recvPkt.getData(), 0,
+							recvPkt.getLength());
+					RPCRequest rpcRequest = RPCMsgUtil
+							.deserializeRPCRequest(receivedRPCPktStr);
+					int operationCode = rpcRequest.getOpCode();
+					byte[] outBuf = null;
+					String payLoad = "";
+					RPCResponse rpcResponse = null;
+					switch (operationCode) {
+					case 1:
+						// rpcRequest will contain sessionID in payload
+						payLoad = getPayloadForSessionRead(rpcRequest.getPayload());
+						rpcResponse = new RPCResponse(rpcRequest.getCallId(),
+								payLoad);
+						break;
+					case 2:
+						// rpcRequest will contain session Data to be written
+						payLoad = getPayloadForSessionWrite(rpcRequest.getPayload());
+						rpcResponse = new RPCResponse(rpcRequest.getCallId(),
+								payLoad);
+						break;
+					case 3:
+						// rpcRequest will contain foreign server's view to be
+						// exchanged
+						payLoad = getPayloadForExchangeView(rpcRequest.getPayload());
+						rpcResponse = new RPCResponse(rpcRequest.getCallId(),
+								payLoad);
+						break;
+					}
+					outBuf = RPCMsgUtil.serializeRPCResponse(rpcResponse)
+							.getBytes();
+					// here outBuf should contain the callID and results of the call
+					DatagramPacket sendPkt = new DatagramPacket(outBuf,
+							outBuf.length, returnAddr, returnPort);
+					rpcSocket.send(sendPkt);
 				}
-				outBuf = RPCMsgUtil.serializeRPCResponse(rpcResponse)
-						.getBytes();
-				// here outBuf should contain the callID and results of the call
-				DatagramPacket sendPkt = new DatagramPacket(outBuf,
-						outBuf.length, returnAddr, returnPort);
-				rpcSocket.send(sendPkt);
+			} catch (SocketException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-		} catch (SocketException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 
