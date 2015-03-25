@@ -44,6 +44,7 @@ public class PrintSessionTableServlet extends HttpServlet {
 			}
 			out.println("</table>");
 		}
+		response.setContentType("text/html;charset=utf-8");
 	}
 
 	/**
