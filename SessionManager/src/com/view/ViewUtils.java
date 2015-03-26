@@ -6,7 +6,6 @@ import java.util.Map.Entry;
 
 import com.rpc.SMRPCClient;
 import com.servlet.EnterServlet;
-import com.sun.org.apache.bcel.internal.generic.NEW;
 import com.util.AWSSimpleDbUtil;
 import com.view.ServerStatus.ServerStatusCode;
 
@@ -84,7 +83,6 @@ public class ViewUtils {
 	 */
 	public static void updateSystemStatus(String serverId, ServerStatusCode statusCode) {
 		ServerStatus status = new ServerStatus(statusCode);
-		System.out.println("BUG3:"+serverId);
 		myView.put(serverId,status);
 		
 	}
