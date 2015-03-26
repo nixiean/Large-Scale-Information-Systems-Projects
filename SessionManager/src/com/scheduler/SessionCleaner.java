@@ -28,29 +28,27 @@ public class SessionCleaner implements Runnable{
 	@Override
 	public void run() {
 		while(true) {
-			//System.out.println("Session Cleaner Thread started at:" + new Date().toString());
+			System.out.println("Session Cleaner Thread started at:" + new Date().toString());
 			List<String> sessionIdsToRemove = new ArrayList<String>();
 			for(String sessionId : sessionTable.keySet()) {
 				String expiryTs = sessionTable.get(sessionId).split("_")[2];
 				Timestamp expiryTimeStamp = Timestamp.valueOf(expiryTs);
 				long t1 = expiryTimeStamp.getTime();
 				long t2 = System.currentTimeMillis();
-				double Nr = (double)(t2 - t1);
-				double Dr = 1000.0*60;
-				double result = Nr/Dr;
-	
-				if(result > sessionTimeOutInMins) {
+				//since timestamp is absolute now just check if current time is greater than expired timestamp
+				if(t2 > t1) {
 					sessionIdsToRemove.add(sessionId);
 				}
 			}
 			
 			//Remove the timeout sessions
 			for(String sessionId : sessionIdsToRemove) {
+				System.out.println("Session Cleaner removing expired session id:" + sessionId);
 				sessionTable.remove(sessionId);
 			}
 			
 			try {
-				//System.out.println("Session Cleaner Thread sleeping at:" + new Date().toString());
+				System.out.println("Session Cleaner Thread sleeping at:" + new Date().toString());
 				Thread.sleep(timeout);
 			} catch(InterruptedException e) {
 				e.printStackTrace();
