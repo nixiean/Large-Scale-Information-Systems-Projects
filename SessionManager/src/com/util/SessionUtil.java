@@ -26,6 +26,7 @@ public class SessionUtil {
 
 	private static int sessionCounter = 0;
 	private static String localIpAddress = null;
+	private static long deltaT = 1;
 
 	// make it synchronized so the unique id will be thread safe
 	public static synchronized String getUniqueCookie(String welcomeMsg) {
@@ -69,6 +70,18 @@ public class SessionUtil {
 	public static String getRandomBackupServers(String localSvrId,
 			String sessionId, long versionNumber, String sessionData,
 			String cookieExpireTs) {
+		//handling delta t for cookie discard time
+		Timestamp t = Timestamp.valueOf(cookieExpireTs);
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(t.getTime());
+		cal.add(Calendar.MINUTE, 1);
+		Timestamp modifiedTs = new Timestamp(cal.getTimeInMillis());
+		cookieExpireTs = modifiedTs.toString();
+		String[] tokens = sessionData.split("_");
+		tokens[2]= cookieExpireTs;
+		sessionData = tokens[0] + "_" + tokens[1] + "_" + tokens[2];
+		
+		
 		int numRandomServers = EnterServlet.RESILIENCY;
 		List<String> activeServerId = new ArrayList<String>();
 

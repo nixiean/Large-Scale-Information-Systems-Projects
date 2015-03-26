@@ -15,7 +15,7 @@ public class SMRPCClient {
 	private static final int portPROJ1BRPC = 5300;
 	private static final int packetSize = 512;
 	public static final String FAILURE = "fail";
-	private static final int SOCKET_TIMEOUT = 5 * 1000;
+	private static final int SOCKET_TIMEOUT = 3 * 1000;
 
 	private static SMRPCClient instance = null;;
 
@@ -44,7 +44,7 @@ public class SMRPCClient {
 			byte[] buf = new byte[packetSize];
 			InetAddress address = InetAddress.getByName(destinationAddress);
 
-			int callId = new Random().nextInt();
+			int callId = Math.abs(new Random().nextInt());
 			int operationCode = 1;
 			String payLoad = sessionId;
 			RPCRequest rpcRequest = new RPCRequest(callId, operationCode,
@@ -60,12 +60,14 @@ public class SMRPCClient {
 			// get response
 			packet = new DatagramPacket(outBuf, outBuf.length);
 
-			// Waits until timeout
-			socket.receive(packet);
-
-			String received = new String(packet.getData(), 0,
-					packet.getLength());
-
+			int receivedCallId = 0;
+			String received = FAILURE; //will be overwritten if we get a valid packet
+			do {
+				socket.receive(packet);
+			    received = new String(packet.getData(), 0, packet.getLength());
+			    receivedCallId = RPCMsgUtil.deserializeRPCResponse(received).getCallId();
+			} while(receivedCallId != callId);
+			
 			socket.close();
 			return received;
 		} catch (Exception e) {
@@ -92,7 +94,7 @@ public class SMRPCClient {
 			byte[] buf = new byte[packetSize];
 			InetAddress address = InetAddress.getByName(destinationAddress);
 
-			int callId = new Random().nextInt();
+			int callId = Math.abs(new Random().nextInt());
 			int operationCode = 2;
 			String payLoad = sessionId + ";" + versionNumber + ";"
 					+ sessionData + ";" + timeStamp;
@@ -109,12 +111,15 @@ public class SMRPCClient {
 			byte[] outBuf = new byte[packetSize];
 			// get response
 			packet = new DatagramPacket(outBuf, outBuf.length);
-			socket.receive(packet);
 
-			String received = new String(packet.getData(), 0,
-					packet.getLength());
-			// display response
-			// System.out.println("Response: " + received);
+			int receivedCallId = 0;
+			String received = FAILURE; //will be overwritten if we get a valid packet
+			do {
+				socket.receive(packet);
+			    received = new String(packet.getData(), 0, packet.getLength());
+			    receivedCallId = RPCMsgUtil.deserializeRPCResponse(received).getCallId();
+			} while(receivedCallId != callId);
+			
 			socket.close();
 			return received;
 		} catch (Exception e) {
@@ -141,7 +146,7 @@ public class SMRPCClient {
 			byte[] buf = new byte[packetSize];
 			InetAddress address = InetAddress.getByName(destinationAddress);
 
-			int callId = new Random().nextInt();
+			int callId = Math.abs(new Random().nextInt());
 			int operationCode = 3;
 			String payLoad = buildPayLoadForExchangeView(myView);
 			RPCRequest rpcRequest = new RPCRequest(callId, operationCode,
@@ -158,12 +163,15 @@ public class SMRPCClient {
 			byte[] outBuf = new byte[packetSize];
 			// get response
 			packet = new DatagramPacket(outBuf, outBuf.length);
-			socket.receive(packet);
 
-			String received = new String(packet.getData(), 0,
-					packet.getLength());
-			// display response
-			// System.out.println("Response: " + received);
+			int receivedCallId = 0;
+			String received = FAILURE; //will be overwritten if we get a valid packet
+			do {
+				socket.receive(packet);
+			    received = new String(packet.getData(), 0, packet.getLength());
+			    receivedCallId = RPCMsgUtil.deserializeRPCResponse(received).getCallId();
+			} while(receivedCallId != callId);
+			
 			socket.close();
 			return received;
 		} catch (Exception e) {

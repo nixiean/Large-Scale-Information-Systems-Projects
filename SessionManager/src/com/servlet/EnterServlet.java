@@ -6,6 +6,7 @@ import java.util.Hashtable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,11 +14,13 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import com.rpc.SMRPCServer;
 import com.scheduler.SessionCleaner;
 import com.scheduler.ViewExchangerThread;
 import com.util.SessionUtil;
 import com.view.ServerStatus;
+import com.view.ServerStatus.ServerStatusCode;
 
 /**
  * Servlet implementation class EnterServlet
@@ -30,10 +33,10 @@ public class EnterServlet extends HttpServlet {
 	// User session details
 	public static Hashtable<String, String> sessionTable = new Hashtable<String, String>();
 
-	public static final int COOKIE_MAX_AGE = 3; // 3 minutes
+	public static final int COOKIE_MAX_AGE = 3; // 
 	private static final long SESSION_CLEANER_INTERVAL = 5*60*1000; // 5 minutes
 	private static final long EXCHANGE_VIEW_INTERVAL = 1*60*1000; // 1 minute
-	public static final int RESILIENCY = 2;
+	public static final int RESILIENCY = 3;
 
 	private static final String COOKIE_NAME = "CS5300PROJ1SESSION";
 
@@ -43,7 +46,7 @@ public class EnterServlet extends HttpServlet {
 		Runnable sessionCleaner = new SessionCleaner(sessionTable, SESSION_CLEANER_INTERVAL);
 		//spawn the sessionCleaner thread in every 5 mins
 		(new Thread(sessionCleaner)).start();
-		//spawn the sessionCleaner thread in every 5 mins
+		//spawn the ViewExchanger  thread in every 1 mins
 		(new Thread(new ViewExchangerThread(EXCHANGE_VIEW_INTERVAL))).start();
 		//Start daemon RPC server thread indefinitely
 		(new Thread(new SMRPCServer())).start();
@@ -61,7 +64,7 @@ public class EnterServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		
+		myView.put(SessionUtil.getIpAddress(), new ServerStatus(ServerStatusCode.UP));
 		String param = request.getParameter("submit");
 		boolean isRefresh = null != param ? param.equals("Refresh") : false;
 		boolean isReplace = null != param ? param.equals("Replace") : false;

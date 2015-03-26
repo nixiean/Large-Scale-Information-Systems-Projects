@@ -28,6 +28,7 @@ public class ViewExchangerThread implements Runnable {
 			EnterServlet.myView.put(localsvrId, new ServerStatus(ServerStatusCode.UP));
 			
 			String gossipPartnerIp = pickGossipPartner();
+			EnterServlet.myView.put(SessionUtil.getIpAddress(), new ServerStatus(ServerStatusCode.UP));
 			if(gossipPartnerIp.equals(localsvrId)) {
 				//Exchange with SimpleDB
 				System.out.println(localsvrId + " is initiating gossip with Simple DB at: "+ new Date().toString());
@@ -37,7 +38,7 @@ public class ViewExchangerThread implements Runnable {
 				System.out.println(localsvrId + " is initiating gossip with "+ gossipPartnerIp +" at: "+ new Date().toString());
 				ViewUtils.exchangeViewWithServer(gossipPartnerIp);
 			}
-			
+			EnterServlet.myView.put(SessionUtil.getIpAddress(), new ServerStatus(ServerStatusCode.UP));
 			try {
 				System.out.println("View Exchange Thread Sleeping at:" + new Date().toString());	
 				Thread.sleep(timeout); 
