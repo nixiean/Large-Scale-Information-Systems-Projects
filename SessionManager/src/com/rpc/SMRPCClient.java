@@ -65,6 +65,7 @@ public class SMRPCClient {
 			do {
 				socket.receive(packet);
 			    received = new String(packet.getData(), 0, packet.getLength());
+			    System.out.println("Received RPC Read Response:" + RPCMsgUtil.deserializeRPCResponse(received));
 			    receivedCallId = RPCMsgUtil.deserializeRPCResponse(received).getCallId();
 			} while(receivedCallId != callId);
 			
@@ -117,6 +118,7 @@ public class SMRPCClient {
 			do {
 				socket.receive(packet);
 			    received = new String(packet.getData(), 0, packet.getLength());
+			    System.out.println("Received RPC Write Response:" + RPCMsgUtil.deserializeRPCResponse(received));
 			    receivedCallId = RPCMsgUtil.deserializeRPCResponse(received).getCallId();
 			} while(receivedCallId != callId);
 			
@@ -169,6 +171,7 @@ public class SMRPCClient {
 			do {
 				socket.receive(packet);
 			    received = new String(packet.getData(), 0, packet.getLength());
+			    System.out.println("Received RPC View Exchange Response:" + RPCMsgUtil.deserializeRPCResponse(received));
 			    receivedCallId = RPCMsgUtil.deserializeRPCResponse(received).getCallId();
 			} while(receivedCallId != callId);
 			
