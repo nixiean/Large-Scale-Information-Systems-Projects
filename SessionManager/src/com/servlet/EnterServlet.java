@@ -221,6 +221,10 @@ public class EnterServlet extends HttpServlet {
 			response.addCookie(myCookie);
 		}
 		
+		primaryOrBackupSessionRead = "NA";
+		readFromServer = null;
+		discardTime = null; 
+		
 		RequestDispatcher dispatcher = request.getRequestDispatcher("home.jsp");
 		dispatcher.forward(request, response);
 	}
