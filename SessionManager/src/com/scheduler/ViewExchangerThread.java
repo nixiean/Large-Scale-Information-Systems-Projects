@@ -24,7 +24,6 @@ public class ViewExchangerThread implements Runnable {
 			System.out.println("View Exchange Thread Started at:" + new Date().toString());		
 			String localsvrId = SessionUtil.getIpAddress();		
 			//Update its own tuple
-			System.out.println("BUG2: Putting this server ID: "+localsvrId);
 			EnterServlet.myView.put(localsvrId, new ServerStatus(ServerStatusCode.UP));
 			
 			String gossipPartnerIp = pickGossipPartner();
