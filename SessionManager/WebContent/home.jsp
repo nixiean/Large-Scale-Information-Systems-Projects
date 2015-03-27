@@ -75,7 +75,16 @@
 		if (timeStamp != null) {
 			out.println("Cookie expires at: " + timeStamp + " </br>");
 		}
+		if (EnterServlet.discardTime == null) {
+			out.println("Discard time: " + timeStamp + " </br>");
+		}
+		else {
 			out.println("Discard time: " + EnterServlet.discardTime + " </br>");
+		}
+		
+			
+			
+
 		if (msg != null) {
 			out.println("</br>"+ "Cookie Details:");
 			String[] sessionDetails = msg.split("_");
