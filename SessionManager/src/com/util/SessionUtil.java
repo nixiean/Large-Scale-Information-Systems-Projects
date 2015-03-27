@@ -108,6 +108,7 @@ public class SessionUtil {
 				if (rpcClient.sendForSessionWrite(sessionId,
 						String.valueOf(versionNumber), sessionData,
 						cookieExpireTs, destinationAddress) != SMRPCClient.FAILURE) {
+					EnterServlet.discardTime = cookieExpireTs;
 					retRandomServers.append(destinationAddress).append(",");
 				} else {
 					retRandomServers.append("NULL").append(",");
@@ -143,6 +144,8 @@ public class SessionUtil {
 				if (!receivedData.equals(SMRPCClient.FAILURE)) {
 					receivedData = receivedData.split("#")[1];
 					if (!receivedData.equals(SMRPCServer.NOT_FOUND)) {
+						//Session read is successful
+						EnterServlet.readFromServer = backupServer;
 						return receivedData.split(",")[1];
 					}
 				}

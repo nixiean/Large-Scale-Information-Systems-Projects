@@ -39,6 +39,9 @@ public class EnterServlet extends HttpServlet {
 	public static final int RESILIENCY = 3;
 
 	private static final String COOKIE_NAME = "CS5300PROJ1SESSION";
+	public static String primaryOrBackupSessionRead = "NA";
+	public static String readFromServer = null;
+	public static String discardTime = null; 
 
 	@Override
 	public void init() throws ServletException {
@@ -65,6 +68,13 @@ public class EnterServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		myView.put(SessionUtil.getIpAddress(), new ServerStatus(ServerStatusCode.UP));
+		
+		
+		//Re-Initialize everything
+		primaryOrBackupSessionRead = "NA";
+		readFromServer = null;
+		discardTime = null; 
+		
 		String param = request.getParameter("submit");
 		boolean isRefresh = null != param ? param.equals("Refresh") : false;
 		boolean isReplace = null != param ? param.equals("Replace") : false;
@@ -105,10 +115,12 @@ public class EnterServlet extends HttpServlet {
 		//TODO Can we use cookieValue directly without checking for name?
 		String sessionId = SessionUtil.getSessionId(myCookie.getValue());
 		String sessionData = null;
-
+		String previousPrimaryServer = SessionUtil.getLocationMetaData(myCookie.getValue()).split(",")[0];
 		// Check for local table
 		if (sessionTable.containsKey(sessionId)) {
 			sessionData = sessionTable.get(sessionId);
+			readFromServer = SessionUtil.getIpAddress();
+
 		} else {
 			
 			String locationMetadata = myCookie.getValue().split("_")[2];
@@ -119,6 +131,13 @@ public class EnterServlet extends HttpServlet {
 		// Do random writes
 		if (sessionData != null) {
 
+			if(readFromServer.equals(previousPrimaryServer)) {
+				primaryOrBackupSessionRead = "P";
+			}
+			else {
+				primaryOrBackupSessionRead = "B";
+			}
+				
 			String[] sessionTokens = sessionData.split("_");
 
 			String localSvrId = SessionUtil.getIpAddress();
@@ -185,6 +204,10 @@ public class EnterServlet extends HttpServlet {
 		String sessionId = SessionUtil.getSessionId(newCookie.getValue());
 		String cookieExpireTs = SessionUtil.getExpiryTimeStamp(COOKIE_MAX_AGE);
 
+		//No Session Read. So set null.
+		readFromServer = null;
+		primaryOrBackupSessionRead = "NA";
+		
 		displayUserPage(request, response, newCookie, sessionId, cookieExpireTs);
 	}
 

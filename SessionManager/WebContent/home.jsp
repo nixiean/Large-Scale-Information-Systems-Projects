@@ -21,7 +21,8 @@
 		String serializedSessionMsg = null;
 		if (sessionIdParam != null) {
 			//TODO
-			serializedSessionMsg = EnterServlet.sessionTable.get(sessionIdParam);
+			serializedSessionMsg = EnterServlet.sessionTable
+					.get(sessionIdParam);
 			String[] tokens = serializedSessionMsg.split("_");
 			welcomeMsg = tokens[0];
 			versionNumber = tokens[1];
@@ -54,9 +55,29 @@
 	</br>
 	</br>
 	<%
+		out.println("Current Server ID : " + SessionUtil.getIpAddress() + "	</br>");	
+		if (EnterServlet.primaryOrBackupSessionRead.equals("P")) {
+			out.println("Existing Session found in: "
+					+ EnterServlet.readFromServer + " </br>");
+			out.println("Existing Session found in Primary Server"  + " </br>");
+		} else if (EnterServlet.primaryOrBackupSessionRead.equals("B")) {
+			out.println("Existing Session found in: "
+					+ EnterServlet.readFromServer + " </br>");
+			out.println("Existing Session found in Backup Server" + " </br>");
+		}
+		out.println("Primary Server for updated session: "
+				+ SessionUtil.getIpAddress() + " </br>");
 		String msg = (String) request.getAttribute("cookieMsg");
 		if (msg != null) {
-			out.println("Cookie Details:");
+			String backupServers = msg.split("_")[2];
+			out.println("Backup Servers for updated session: " + backupServers + " </br>");
+		}
+		if (timeStamp != null) {
+			out.println("Cookie expires at: " + timeStamp + " </br>");
+		}
+			out.println("Discard time: " + EnterServlet.discardTime + " </br>");
+		if (msg != null) {
+			out.println("</br>"+ "Cookie Details:");
 			String[] sessionDetails = msg.split("_");
 	%>
 	<table style="width: 40%; border: 2px solid black;">
@@ -66,20 +87,17 @@
 			<td><b>Location Metadata</b></td>
 		</tr>
 		<tr>
-			<td><b>
-					<%
-						out.print(sessionDetails[0]);
-					%>
+			<td><b> <%
+ 	out.print(sessionDetails[0]);
+ %>
 			</b></td>
-			<td><b>
-					<%
-						out.print(sessionDetails[1]);
-					%>
+			<td><b> <%
+ 	out.print(sessionDetails[1]);
+ %>
 			</b></td>
-			<td><b>
-					<%
-						out.print(sessionDetails[2]);
-					%>
+			<td><b> <%
+ 	out.print(sessionDetails[2]);
+ %>
 			</b></td>
 		</tr>
 	</table>
@@ -87,12 +105,6 @@
 		}
 	%>
 	</br>
-	</br>
-	<%
-		if (timeStamp != null) {
-			out.println("Cookie expires at: " + timeStamp);
-		}
-	%>
 	</br>
 	<h5>
 		Click <a href="./print">here</a> to print all active sessions
@@ -111,15 +123,17 @@
 			for (String key : EnterServlet.myView.keySet()) {
 				String statusColor;
 				ServerStatus viewSrvStatusObj = EnterServlet.myView.get(key);
-				
+
 				if (viewSrvStatusObj.getStatus() == ServerStatusCode.UP)
-					statusColor = "#A5DE43"; 
+					statusColor = "#A5DE43";
 				else
 					statusColor = "#ED4A4A";
 		%>
-					<tr bgcolor= <%=statusColor%>>
-						<td><%= key %></td><td><%= viewSrvStatusObj.getStatus() %></td><td><%= viewSrvStatusObj.getTime() %></td>
-					</tr>
+		<tr bgcolor=<%=statusColor%>>
+			<td><%=key%></td>
+			<td><%=viewSrvStatusObj.getStatus()%></td>
+			<td><%=viewSrvStatusObj.getTime()%></td>
+		</tr>
 		<%
 			}
 		%>
