@@ -55,6 +55,8 @@
 	</br>
 	</br>
 	<%
+	String msg = null;
+	if (timeStamp != null) {
 		out.println("Current Server ID : " + SessionUtil.getIpAddress() + "	</br>");	
 		if (EnterServlet.primaryOrBackupSessionRead.equals("P")) {
 			out.println("Existing Session found in: "
@@ -67,21 +69,20 @@
 		}
 		out.println("Primary Server for updated session: "
 				+ SessionUtil.getIpAddress() + " </br>");
-		String msg = (String) request.getAttribute("cookieMsg");
+		msg = (String) request.getAttribute("cookieMsg");
 		if (msg != null) {
 			String backupServers = msg.split("_")[2];
 			out.println("Backup Servers for updated session: " + backupServers + " </br>");
 		}
-		if (timeStamp != null) {
+
 			out.println("Cookie expires at: " + timeStamp + " </br>");
-		}
 		if (EnterServlet.discardTime == null) {
 			out.println("Discard time: " + timeStamp + " </br>");
 		}
 		else {
 			out.println("Discard time: " + EnterServlet.discardTime + " </br>");
 		}
-		
+		}
 			
 			
 
