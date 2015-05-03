@@ -26,7 +26,7 @@ public class PageRank {
 	static long rejectCount = 0;
 	static long acceptCount = 0;
 
-	static TreeMap<Integer, Integer> blockIDs = new TreeMap<Integer, Integer>();
+	static TreeMap<Long, Integer> blockIDs = new TreeMap<Long, Integer>();
 	static int[] ranges = { 10328, 10045, 10256, 10016, 9817, 10379, 9750,
 			9527, 10379, 10004, 10066, 10378, 10054, 9575, 10379, 10379, 9822,
 			10360, 10111, 10379, 10379, 10379, 9831, 10285, 10060, 10211,
@@ -122,33 +122,38 @@ public class PageRank {
 		bw.close();
 	}
 
-	public static void blockIDofNode() {
-		System.out.println(blockIDs.get(blockIDs.lowerKey(20372)));
+	/*
+	 * Get the blockID for a given node
+	 */
+	public static int blockIDofNode(long node) {
+		return blockIDs.get(blockIDs.lowerKey(node));
 	}
 
+	/*
+	 * Build the treemap to hold the ranges
+	 */
 	public static void buildTreeMap() {
 		int i = 0;
-		int counter = 0;
-		System.out.println(counter+ " " +i);
-		blockIDs.put(0,i++);
-		for (int x: ranges) {
+		long counter = 0;
+		System.out.println(counter + " " + i);
+		blockIDs.put((long) 0, i++);
+		for (int x : ranges) {
 			counter = counter + x;
-			//lower key is strictly lesser than
-			System.out.println((counter-1)+ " " +i);
-			blockIDs.put((counter-1),i++);
+			// lower key is strictly lesser than
+			System.out.println((counter - 1) + " " + i);
+			blockIDs.put((counter - 1), i++);
 		}
 	}
-	
+
 	public static void main(String[] args) throws FileNotFoundException,
 			IOException {
 		// Read and process input file
-		 processInputFile(inputFile);
+		processInputFile(inputFile);
 		// Write to output file
-		 writeToFile(outputFile);
+		writeToFile(outputFile);
 		// Block ID
 		buildTreeMap();
-		blockIDofNode();
+		blockIDofNode(54445);
 	}
-
 
 }
